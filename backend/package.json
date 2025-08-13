@@ -14,9 +14,14 @@
   "type": "commonjs",
   "dependencies": {
     "@google-cloud/bigquery": "^8.1.1",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "luxon": "^3.4.4",
+    "moment-timezone": "^0.5.45"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

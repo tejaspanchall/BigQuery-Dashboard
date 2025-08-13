@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const auth = require('./middleware/auth');
 
 // Load environment variables
 dotenv.config();
@@ -18,6 +19,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
+const authRoutes = require('./routes/auth');
 const bigQueryRoutes = require('./routes/bigquery');
 
 // Welcome route
@@ -25,8 +27,9 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to BigQuery Dashboard API' });
 });
 
-// Mount BigQuery routes
-app.use('/api/bigquery', bigQueryRoutes);
+// Mount routes
+app.use('/api/auth', authRoutes);
+app.use('/api/bigquery', auth, bigQueryRoutes); // Protected routes
 
 // Error handling middleware
 app.use((err, req, res, next) => {

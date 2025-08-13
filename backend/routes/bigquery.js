@@ -69,4 +69,60 @@ router.post('/query', async (req, res) => {
   }
 });
 
+// Get daily KPIs
+router.get('/kpis/daily', async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Start date and end date are required' });
+    }
+    const kpis = await bigQueryService.getDailyKPIs(startDate, endDate);
+    res.json(kpis);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get platform comparison
+router.get('/platforms/comparison', async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Start date and end date are required' });
+    }
+    const comparison = await bigQueryService.getPlatformComparison(startDate, endDate);
+    res.json(comparison);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get campaign drilldown
+router.get('/campaigns/drilldown', async (req, res) => {
+  try {
+    const { startDate, endDate, platform } = req.query;
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Start date and end date are required' });
+    }
+    const campaigns = await bigQueryService.getCampaignDrilldown(startDate, endDate, platform);
+    res.json(campaigns);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get orders and refunds
+router.get('/orders-refunds', async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Start date and end date are required' });
+    }
+    const orders = await bigQueryService.getOrdersAndRefunds(startDate, endDate);
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router; 
