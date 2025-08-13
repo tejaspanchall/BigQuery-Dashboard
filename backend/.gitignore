@@ -1,11 +1,12 @@
 # Dependencies
-node_modules/
+/node_modules/
 package-lock.json
 
 # Environment variables
 .env
 .env.local
 .env.*.local
+!.env.example
 
 # Logs
 logs
@@ -52,9 +53,6 @@ coverage
 
 # Yarn Integrity file
 .yarn-integrity
-
-# dotenv environment variables file
-.env
 
 # Production build files
 dist/
