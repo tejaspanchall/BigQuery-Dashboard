@@ -56,4 +56,22 @@ router.post('/mer', async (req, res) => {
   }
 });
 
+// Get return orders count
+router.post('/returns', async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+    
+    if (!startDate || !endDate) {
+      return res.status(400).json({ 
+        error: 'Start date and end date are required in request body' 
+      });
+    }
+
+    const returnOrders = await shopifyService.getReturnOrders(startDate, endDate);
+    res.json(returnOrders);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router; 

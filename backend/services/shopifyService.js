@@ -144,6 +144,64 @@ class ShopifyService {
       throw error;
     }
   }
+
+  /**
+   * Get return orders count based on non-empty refunds array
+   * @param {string} startDate - Start date in YYYY-MM-DD format
+   * @param {string} endDate - End date in YYYY-MM-DD format
+   * @returns {Promise<Object>} Return orders count
+   */
+  async getReturnOrders(startDate, endDate) {
+    try {
+      // Get reference to the table
+      const dataset = bigquery.dataset(this.datasetId);
+      const table = dataset.table('shopifyakikoorders');
+
+      // Get rows with metadata
+      const [rows] = await table.getRows();
+      
+      // Process and filter the data
+      let returnOrdersCount = 0;
+      
+      rows.forEach(row => {
+        try {
+          // Skip if no processed_at date
+          if (!row.processed_at) return;
+          
+          // Extract date from processed_at timestamp
+          const processedDate = row.processed_at.split('T')[0];
+          
+          // Check if date is in range and refunds array is not empty
+          if (processedDate >= startDate && 
+              processedDate <= endDate && 
+              row.refunds && 
+              row.refunds !== '[]' && 
+              row.refunds !== '""' && 
+              row.refunds !== '') {
+            // Parse refunds JSON string to check if it's actually an array with items
+            try {
+              const refundsArray = JSON.parse(row.refunds);
+              if (Array.isArray(refundsArray) && refundsArray.length > 0) {
+                returnOrdersCount++;
+              }
+            } catch (jsonError) {
+              console.error('Error parsing refunds JSON:', jsonError, row.refunds);
+            }
+          }
+        } catch (e) {
+          console.error('Error processing row:', e, row);
+        }
+      });
+      
+      return {
+        return_orders: returnOrdersCount
+      };
+      
+    } catch (error) {
+      console.error('Error fetching return orders:', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = new ShopifyService(); 
