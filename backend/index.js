@@ -23,6 +23,7 @@ const authRoutes = require('./routes/auth');
 const bigQueryRoutes = require('./routes/bigquery');
 const metaRoutes = require('./routes/meta');
 const googleRoutes = require('./routes/google');
+const shopifyRoutes = require('./routes/shopify');
 
 // Welcome route
 app.get('/', (req, res) => {
@@ -34,6 +35,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/bigquery', bigQueryRoutes); // Removed auth middleware
 app.use('/api/meta', metaRoutes);
 app.use('/api/google', googleRoutes);
+app.use('/api/shopify', shopifyRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
