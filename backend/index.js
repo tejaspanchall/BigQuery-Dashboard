@@ -21,6 +21,8 @@ app.use((req, res, next) => {
 // Routes
 const authRoutes = require('./routes/auth');
 const bigQueryRoutes = require('./routes/bigquery');
+const metaRoutes = require('./routes/meta');
+const googleRoutes = require('./routes/google');
 
 // Welcome route
 app.get('/', (req, res) => {
@@ -30,6 +32,8 @@ app.get('/', (req, res) => {
 // Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/bigquery', bigQueryRoutes); // Removed auth middleware
+app.use('/api/meta', metaRoutes);
+app.use('/api/google', googleRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

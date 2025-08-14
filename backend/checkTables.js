@@ -1,5 +1,5 @@
 require('dotenv').config();
-const bigquery = require('./config/bigquery').bigquery;
+const bigquery = require('./config/bigquery');
 
 async function checkTables() {
   try {
