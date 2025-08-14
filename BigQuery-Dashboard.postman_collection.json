@@ -41,7 +41,53 @@
 							"path": ["api", "auth", "login"]
 						},
 						"description": "Login to get JWT token"
-					}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"password\": \"your_dashboard_password\"\n}"
+								},
+								"url": "{{base_url}}/api/auth/login"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}"
+						},
+						{
+							"name": "Error - Invalid Password",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"password\": \"wrong_password\"\n}"
+								},
+								"url": "{{base_url}}/api/auth/login"
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"error\": \"Invalid password\"\n}"
+						}
+					]
 				}
 			]
 		},
@@ -157,7 +203,36 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "meta", "adspend"]
 						}
-					}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
+								},
+								"url": "{{base_url}}/api/meta/adspend"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"amount\": 5000.10\n}"
+						}
+					]
 				},
 				{
 					"name": "Get Clicks",
@@ -184,34 +259,36 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "meta", "clicks"]
 						}
-					}
-				},
-				{
-					"name": "Get Impressions",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
+								},
+								"url": "{{base_url}}/api/meta/clicks"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
 								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/meta/impressions",
-							"host": ["{{base_url}}"],
-							"path": ["api", "meta", "impressions"]
+							],
+							"body": "{\n    \"count\": 1500\n}"
 						}
-					}
+					]
 				},
 				{
 					"name": "Get CTR",
@@ -238,7 +315,36 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "meta", "ctr"]
 						}
-					}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
+								},
+								"url": "{{base_url}}/api/meta/ctr"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"ratio\": 2.8\n}"
+						}
+					]
 				},
 				{
 					"name": "Get Conversions",
@@ -297,7 +403,36 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "google", "adspend"]
 						}
-					}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
+								},
+								"url": "{{base_url}}/api/google/adspend"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"amount\": 5000.10\n}"
+						}
+					]
 				},
 				{
 					"name": "Get Clicks",
@@ -324,34 +459,36 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "google", "clicks"]
 						}
-					}
-				},
-				{
-					"name": "Get Impressions",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
+								},
+								"url": "{{base_url}}/api/google/clicks"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
 								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/google/impressions",
-							"host": ["{{base_url}}"],
-							"path": ["api", "google", "impressions"]
+							],
+							"body": "{\n    \"count\": 2000\n}"
 						}
-					}
+					]
 				},
 				{
 					"name": "Get CTR",
@@ -378,7 +515,36 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "google", "ctr"]
 						}
-					}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
+								},
+								"url": "{{base_url}}/api/google/ctr"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"ratio\": 2.8\n}"
+						}
+					]
 				},
 				{
 					"name": "Get Conversions",
@@ -437,7 +603,36 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "shopify", "orders"]
 						}
-					}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
+								},
+								"url": "{{base_url}}/api/shopify/orders"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"total_orders\": 150\n}"
+						}
+					]
 				},
 				{
 					"name": "Get Net Revenue",
@@ -464,7 +659,36 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "shopify", "net-revenue"]
 						}
-					}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
+								},
+								"url": "{{base_url}}/api/shopify/net-revenue"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"net_revenue\": 25000.50\n}"
+						}
+					]
 				},
 				{
 					"name": "Get MER",
@@ -491,7 +715,36 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "shopify", "mer"]
 						}
-					}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
+								},
+								"url": "{{base_url}}/api/shopify/mer"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"mer\": 2.5,\n    \"net_revenue\": 25000.50,\n    \"total_spend\": 10000.20,\n    \"meta_spend\": 5000.10,\n    \"google_spend\": 5000.10\n}"
+						}
+					]
 				},
 				{
 					"name": "Get Returns",
