@@ -202,6 +202,72 @@ class ShopifyService {
       throw error;
     }
   }
+
+  /**
+ * Get daily metrics (orders and revenue) from Shopify
+ * @param {string} startDate - Start date in YYYY-MM-DD format
+ * @param {string} endDate - End date in YYYY-MM-DD format
+ * @returns {Promise<Array>} Daily metrics data
+ */
+async getDailyMetrics(startDate, endDate) {
+  try {
+    // Get reference to the table
+    const dataset = bigquery.dataset(this.datasetId);
+    const table = dataset.table('shopifyakikoorders');
+
+    // Get rows with metadata
+    const [rows] = await table.getRows();
+    
+    // Process and filter the data
+    const dailyMetrics = {};
+    
+    rows.forEach(row => {
+      try {
+        // Skip if no processed_at date or confirmed status or current_subtotal_price
+        if (!row.processed_at || row.confirmed === undefined || !row.current_subtotal_price) return;
+        
+        // Extract date from processed_at timestamp (format: YYYY-MM-DDTHH:mm:ss+05:30)
+        const processedDate = row.processed_at.split('T')[0]; // Get YYYY-MM-DD part
+        
+        // Only process if date is in range and order is confirmed
+        if (processedDate >= startDate && 
+            processedDate <= endDate && 
+            row.confirmed === true) {
+          
+          // Initialize metrics for this date if not exists
+          if (!dailyMetrics[processedDate]) {
+            dailyMetrics[processedDate] = {
+              date: processedDate,
+              revenue: 0,
+              orders: 0
+            };
+          }
+          
+          // Parse the current_subtotal_price as float and add to total
+          const revenue = parseFloat(row.current_subtotal_price);
+          if (!isNaN(revenue)) {
+            dailyMetrics[processedDate].revenue += revenue;
+            dailyMetrics[processedDate].orders += 1;
+          }
+        }
+      } catch (e) {
+        console.error('Error processing row:', e, row);
+      }
+    });
+    
+    // Convert to array and sort by date
+    return Object.values(dailyMetrics)
+      .map(day => ({
+        ...day,
+        revenue: parseFloat(day.revenue.toFixed(2))
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+    
+  } catch (error) {
+    console.error('Error fetching Shopify daily metrics:', error);
+    throw error;
+  }
+}
 }
 
 module.exports = new ShopifyService(); 
