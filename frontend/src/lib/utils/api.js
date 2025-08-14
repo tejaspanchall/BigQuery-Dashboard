@@ -14,7 +14,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Format date to YYYY-MM-DD as expected by the API
 export const formatDateForAPI = (date) => {
   return format(date, 'yyyy-MM-dd');
 };
@@ -31,17 +30,33 @@ export const fetchMetrics = async (endpoint, startDate, endDate) => {
       endDate: formatDateForAPI(endDate),
     });
 
-    // Add type checking and default values
     const data = response.data || {};
     
     // Handle different response structures based on endpoint
-    if (endpoint.includes('orders')) {
-      return { count: Number(data.count) || 0 };
+    if (endpoint.includes('/orders')) {
+      return { count: Number(data.total_orders) || 0 };
     }
-    if (endpoint.includes('revenue') || endpoint.includes('adspend')) {
+    if (endpoint.includes('/net-revenue')) {
+      return { amount: Number(data.net_revenue) || 0 };
+    }
+    if (endpoint.includes('/mer')) {
+      return { 
+        ratio: Number(data.mer) || 0,
+        details: {
+          netRevenue: Number(data.net_revenue) || 0,
+          totalSpend: Number(data.total_spend) || 0,
+          metaSpend: Number(data.meta_spend) || 0,
+          googleSpend: Number(data.google_spend) || 0
+        }
+      };
+    }
+    if (endpoint.includes('adspend')) {
       return { amount: Number(data.amount) || 0 };
     }
-    if (endpoint.includes('mer') || endpoint.includes('ctr')) {
+    if (endpoint.includes('/clicks')) {
+      return { count: Number(data.count) || 0 };
+    }
+    if (endpoint.includes('/ctr')) {
       return { ratio: Number(data.ratio) || 0 };
     }
     

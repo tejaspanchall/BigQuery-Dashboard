@@ -7,7 +7,7 @@ import MetricCard from '@/components/ui/MetricCard';
 import useDateRangeStore from '@/lib/store/dateRange';
 import { ArrowTrendingUpIcon, CurrencyDollarIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 
-const StatisticCard = ({ icon: Icon, label, value, loading }) => (
+const StatisticCard = ({ icon: Icon, label, value, loading, subtext = null }) => (
   <div className="bg-white rounded-xl shadow-sm border border-primary-100 p-6 transition-all duration-200 hover:shadow-md">
     <div className="flex items-start justify-between">
       <div className="flex-1">
@@ -23,6 +23,9 @@ const StatisticCard = ({ icon: Icon, label, value, loading }) => (
               value
             )}
           </div>
+          {subtext && (
+            <div className="mt-2 text-sm text-primary-600">{subtext}</div>
+          )}
         </div>
       </div>
     </div>
@@ -34,7 +37,7 @@ export default function OverviewPage() {
   const [metrics, setMetrics] = useState({
     orders: { value: 0, loading: true },
     revenue: { value: 0, loading: true },
-    mer: { value: 0, loading: true },
+    mer: { value: 0, details: null, loading: true },
     metaAdSpend: { value: 0, loading: true },
     googleAdSpend: { value: 0, loading: true },
   });
@@ -50,7 +53,6 @@ export default function OverviewPage() {
 
   useEffect(() => {
     const fetchAllMetrics = async () => {
-      // Set loading state for all metrics
       setMetrics((prev) => ({
         orders: { ...prev.orders, loading: true },
         revenue: { ...prev.revenue, loading: true },
@@ -71,13 +73,16 @@ export default function OverviewPage() {
         setMetrics({
           orders: { value: orders.count, loading: false },
           revenue: { value: revenue.amount, loading: false },
-          mer: { value: mer.ratio, loading: false },
+          mer: { 
+            value: mer.ratio,
+            details: mer.details,
+            loading: false 
+          },
           metaAdSpend: { value: metaAdSpend.amount, loading: false },
           googleAdSpend: { value: googleAdSpend.amount, loading: false },
         });
       } catch (error) {
         console.error('Error fetching metrics:', error);
-        // Set error state but keep previous values
         setMetrics((prev) => ({
           orders: { ...prev.orders, loading: false, error: true },
           revenue: { ...prev.revenue, loading: false, error: true },
@@ -124,6 +129,7 @@ export default function OverviewPage() {
               label="Marketing Efficiency Ratio (MER)"
               value={metrics.mer.loading ? null : `${metrics.mer.value.toFixed(2)}%`}
               loading={metrics.mer.loading}
+              subtext={metrics.mer.details ? `Total Spend: ${formatCurrency(metrics.mer.details.totalSpend)}` : null}
             />
           </div>
         </section>
