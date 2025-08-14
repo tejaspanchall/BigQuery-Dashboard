@@ -51,7 +51,13 @@ export const fetchMetrics = async (endpoint, startDate, endDate) => {
       };
     }
     if (endpoint.includes('adspend')) {
-      return { amount: Number(data.amount) || 0 };
+      return {
+        amount: Number(data.amount) || 0,
+        daily_data: Array.isArray(data.daily_data) ? data.daily_data.map(item => ({
+          date: item.date,
+          spend: Number(item.spend) || 0
+        })) : []
+      };
     }
     if (endpoint.includes('/clicks')) {
       return { count: Number(data.count) || 0 };

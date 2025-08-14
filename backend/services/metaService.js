@@ -10,7 +10,7 @@ class MetaService {
    * Get Meta (Facebook) ad spend for specific dates
    * @param {string} startDate - Start date in YYYY-MM-DD format
    * @param {string} endDate - End date in YYYY-MM-DD format
-   * @returns {Promise<Array>} Daily ad spend data for Meta
+   * @returns {Promise<Object>} Total ad spend data for Meta
    */
   async getAdSpend(startDate, endDate) {
     try {
@@ -22,7 +22,8 @@ class MetaService {
       const [rows] = await table.getRows();
       
       // Process and filter the data
-      const spendByDate = {};
+      let totalSpend = 0;
+      let dailySpends = [];
       
       rows.forEach(row => {
         try {
@@ -38,11 +39,11 @@ class MetaService {
             // Parse spend value
             const spend = parseFloat(row.spend);
             if (!isNaN(spend)) {
-              // Add spend to the date's total
-              if (!spendByDate[date]) {
-                spendByDate[date] = 0;
-              }
-              spendByDate[date] += spend;
+              totalSpend += spend;
+              dailySpends.push({
+                date,
+                spend: parseFloat(spend.toFixed(2))
+              });
             }
           }
         } catch (e) {
@@ -50,13 +51,10 @@ class MetaService {
         }
       });
       
-      // Convert aggregated data to array format
-      const result = Object.entries(spendByDate).map(([date, totalSpend]) => ({
-        date,
-        spend: parseFloat(totalSpend.toFixed(2)) // Round to 2 decimal places
-      })).sort((a, b) => a.date.localeCompare(b.date));
-      
-      return result;
+      return {
+        total_spend: parseFloat(totalSpend.toFixed(2)),
+        daily_spends: dailySpends.sort((a, b) => a.date.localeCompare(b.date))
+      };
       
     } catch (error) {
       console.error('Error fetching Meta ad spend:', error);

@@ -30,7 +30,7 @@ const validateToken = (req, res, next) => {
 };
 
 /**
- * Get daily ad spend data for Meta (Facebook)
+ * Get total ad spend data for Meta (Facebook)
  */
 router.post('/adspend', validateToken, async (req, res) => {
   try {
@@ -43,7 +43,8 @@ router.post('/adspend', validateToken, async (req, res) => {
     
     const adSpendData = await metaService.getAdSpend(startDate, endDate);
     res.json({
-      data: adSpendData,
+      amount: adSpendData.total_spend,
+      daily_data: adSpendData.daily_spends,
       platform: 'meta'
     });
   } catch (error) {

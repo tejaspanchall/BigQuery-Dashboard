@@ -38,8 +38,8 @@ export default function OverviewPage() {
     orders: { value: 0, loading: true },
     revenue: { value: 0, loading: true },
     mer: { value: 0, details: null, loading: true },
-    metaAdSpend: { value: 0, loading: true },
-    googleAdSpend: { value: 0, loading: true },
+    metaAdSpend: { value: 0, dailyData: [], loading: true },
+    googleAdSpend: { value: 0, dailyData: [], loading: true },
   });
 
   const formatCurrency = (value) => {
@@ -78,8 +78,16 @@ export default function OverviewPage() {
             details: mer.details,
             loading: false 
           },
-          metaAdSpend: { value: metaAdSpend.amount, loading: false },
-          googleAdSpend: { value: googleAdSpend.amount, loading: false },
+          metaAdSpend: { 
+            value: metaAdSpend.amount, 
+            dailyData: metaAdSpend.daily_data || [],
+            loading: false 
+          },
+          googleAdSpend: { 
+            value: googleAdSpend.amount,
+            dailyData: googleAdSpend.daily_data || [],
+            loading: false 
+          },
         });
       } catch (error) {
         console.error('Error fetching metrics:', error);
@@ -95,6 +103,11 @@ export default function OverviewPage() {
 
     fetchAllMetrics();
   }, [startDate, endDate]);
+
+  const getTotalAdSpend = () => {
+    if (metrics.metaAdSpend.loading || metrics.googleAdSpend.loading) return null;
+    return metrics.metaAdSpend.value + metrics.googleAdSpend.value;
+  };
 
   return (
     <div className="space-y-8">

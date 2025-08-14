@@ -10,7 +10,7 @@ class GoogleService {
    * Get Google ad spend for specific dates
    * @param {string} startDate - Start date in YYYY-MM-DD format
    * @param {string} endDate - End date in YYYY-MM-DD format
-   * @returns {Promise<Array>} Daily ad spend data for Google
+   * @returns {Promise<Object>} Total ad spend data for Google
    */
   async getAdSpend(startDate, endDate) {
     try {
@@ -22,7 +22,8 @@ class GoogleService {
       const [rows] = await table.getRows();
       
       // Process and filter the data
-      const spendByDate = {};
+      let totalSpend = 0;
+      let dailySpends = [];
       
       rows.forEach(row => {
         try {
@@ -38,12 +39,13 @@ class GoogleService {
             // Parse cost value and convert from micros
             const costMicros = parseFloat(row.metrics_cost_micros);
             if (!isNaN(costMicros)) {
-              // Convert micros to standard currency and add to date's total
+              // Convert micros to standard currency
               const spend = costMicros / 1000000;
-              if (!spendByDate[date]) {
-                spendByDate[date] = 0;
-              }
-              spendByDate[date] += spend;
+              totalSpend += spend;
+              dailySpends.push({
+                date,
+                spend: parseFloat(spend.toFixed(2))
+              });
             }
           }
         } catch (e) {
@@ -51,13 +53,10 @@ class GoogleService {
         }
       });
       
-      // Convert aggregated data to array format
-      const result = Object.entries(spendByDate).map(([date, totalSpend]) => ({
-        date,
-        spend: parseFloat(totalSpend.toFixed(2)) // Round to 2 decimal places
-      })).sort((a, b) => a.date.localeCompare(b.date));
-      
-      return result;
+      return {
+        total_spend: parseFloat(totalSpend.toFixed(2)),
+        daily_spends: dailySpends.sort((a, b) => a.date.localeCompare(b.date))
+      };
       
     } catch (error) {
       console.error('Error fetching Google ad spend:', error);

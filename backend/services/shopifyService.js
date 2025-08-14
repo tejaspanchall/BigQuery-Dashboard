@@ -119,12 +119,12 @@ class ShopifyService {
       const netRevenue = revenueData.net_revenue;
 
       // Get Meta ad spend
-      const metaSpend = await metaService.getAdSpend(startDate, endDate);
-      const totalMetaSpend = metaSpend.reduce((sum, day) => sum + day.spend, 0);
+      const metaSpendData = await metaService.getAdSpend(startDate, endDate);
+      const totalMetaSpend = metaSpendData.total_spend;
 
       // Get Google ad spend
-      const googleSpend = await googleService.getAdSpend(startDate, endDate);
-      const totalGoogleSpend = googleSpend.reduce((sum, day) => sum + day.spend, 0);
+      const googleSpendData = await googleService.getAdSpend(startDate, endDate);
+      const totalGoogleSpend = googleSpendData.total_spend;
 
       // Calculate total spend
       const totalSpend = totalMetaSpend + totalGoogleSpend;

@@ -230,7 +230,7 @@
 									"value": "application/json"
 								}
 							],
-							"body": "{\n    \"amount\": 5000.10\n}"
+							"body": "{\n    \"amount\": 5000.10,\n    \"daily_data\": [\n        {\n            \"date\": \"2024-01-01\",\n            \"spend\": 150.25\n        },\n        {\n            \"date\": \"2024-01-02\",\n            \"spend\": 175.50\n        }\n    ],\n    \"platform\": \"meta\"\n}"
 						}
 					]
 				},
@@ -430,7 +430,7 @@
 									"value": "application/json"
 								}
 							],
-							"body": "{\n    \"amount\": 5000.10\n}"
+							"body": "{\n    \"amount\": 6000.20,\n    \"daily_data\": [\n        {\n            \"date\": \"2024-01-01\",\n            \"spend\": 200.10\n        },\n        {\n            \"date\": \"2024-01-02\",\n            \"spend\": 180.30\n        }\n    ],\n    \"platform\": \"google\"\n}"
 						}
 					]
 				},

@@ -30,7 +30,7 @@ const validateToken = (req, res, next) => {
 };
 
 /**
- * Get daily ad spend data for Google
+ * Get total ad spend data for Google
  */
 router.post('/adspend', validateToken, async (req, res) => {
   try {
@@ -43,7 +43,8 @@ router.post('/adspend', validateToken, async (req, res) => {
     
     const adSpendData = await googleService.getAdSpend(startDate, endDate);
     res.json({
-      data: adSpendData,
+      amount: adSpendData.total_spend,
+      daily_data: adSpendData.daily_spends,
       platform: 'google'
     });
   } catch (error) {
