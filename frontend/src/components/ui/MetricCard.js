@@ -1,9 +1,8 @@
 import React from 'react';
-import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/solid';
 
-const MetricCard = ({ title, value, change, format = 'number', loading = false }) => {
+const MetricCard = ({ title, value, format = 'number', loading = false }) => {
   const formatValue = (val) => {
-    if (loading) return '-';
+    if (loading) return 'Loading...';
     if (val === null || val === undefined) return 'N/A';
     
     switch (format) {
@@ -20,24 +19,12 @@ const MetricCard = ({ title, value, change, format = 'number', loading = false }
     }
   };
 
-  const getChangeColor = () => {
-    if (!change) return 'text-primary-500';
-    return change > 0 ? 'text-green-500' : 'text-red-500';
-  };
-
   return (
-    <div className="p-6 bg-white rounded-xl shadow-sm border border-primary-100">
-      <h3 className="text-sm font-medium text-primary-500 mb-1">{title}</h3>
-      <div className="flex items-baseline gap-2">
-        <span className="text-2xl font-semibold text-primary-900">
-          {formatValue(value)}
-        </span>
-      </div>
-      {loading && (
-        <div className="animate-pulse mt-2">
-          <div className="h-2 bg-primary-100 rounded"></div>
-        </div>
-      )}
+    <div className="flex items-center justify-between">
+      <span className="text-sm text-primary-500">{title}</span>
+      <span className="text-base font-medium text-primary-900">
+        {formatValue(value)}
+      </span>
     </div>
   );
 };

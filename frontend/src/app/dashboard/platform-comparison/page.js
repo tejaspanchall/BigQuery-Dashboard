@@ -3,8 +3,61 @@
 import { useEffect, useState } from 'react';
 import { fetchMetrics } from '@/lib/utils/api';
 import DateRangePicker from '@/components/ui/DateRangePicker';
-import MetricCard from '@/components/ui/MetricCard';
 import useDateRangeStore from '@/lib/store/dateRange';
+import { ChartBarIcon } from '@heroicons/react/24/outline';
+
+const MetricRow = ({ title, meta, google, format = 'number', loading }) => {
+  const formatValue = (val) => {
+    if (loading) return 'Loading...';
+    if (val === null || val === undefined) return 'N/A';
+    
+    switch (format) {
+      case 'currency':
+        return new Intl.NumberFormat('en-IN', {
+          style: 'currency',
+          currency: 'INR',
+          maximumFractionDigits: 0,
+        }).format(val);
+      case 'percentage':
+        return `${val.toFixed(2)}%`;
+      default:
+        return new Intl.NumberFormat('en-IN').format(val);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-3 gap-4 py-4 border-b border-primary-900/10 last:border-0">
+      <div className="text-sm text-primary-900">{title}</div>
+      <div className="text-sm font-medium text-primary-900">{formatValue(meta)}</div>
+      <div className="text-sm font-medium text-primary-900">{formatValue(google)}</div>
+    </div>
+  );
+};
+
+const ComparisonCard = ({ title, metrics = [], loading }) => (
+  <div className="bg-white rounded-xl p-6 border border-primary-900/10 hover:border-primary-900/20 transition-all duration-300 shadow-sm hover:shadow">
+    <div className="space-y-6">
+      <div className="flex items-center gap-2 pb-4 border-b border-primary-900/10">
+        <ChartBarIcon className="w-5 h-5 text-primary-900" />
+        <h3 className="text-sm font-medium text-primary-900">{title}</h3>
+      </div>
+      <div className="grid grid-cols-3 gap-4">
+        <div className="text-xs uppercase tracking-wider text-primary-900 font-medium">Metric</div>
+        <div className="text-xs uppercase tracking-wider text-primary-900 font-medium">Meta</div>
+        <div className="text-xs uppercase tracking-wider text-primary-900 font-medium">Google</div>
+      </div>
+      <div className="space-y-2">
+        {metrics.map((metric, index) => (
+          <MetricRow
+            key={index}
+            {...metric}
+            loading={loading}
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+);
 
 export default function PlatformComparisonPage() {
   const { startDate, endDate } = useDateRangeStore();
@@ -74,14 +127,14 @@ export default function PlatformComparisonPage() {
             adSpend: { value: metaAdSpend.amount, loading: false },
             clicks: { value: metaClicks.count, loading: false },
             impressions: { value: metaImpressions.count, loading: false },
-            ctr: { value: metaCTR.percentage, loading: false },
+            ctr: { value: metaCTR.ratio, loading: false },
             conversions: { value: metaConversions.count, loading: false },
           },
           google: {
             adSpend: { value: googleAdSpend.amount, loading: false },
             clicks: { value: googleClicks.count, loading: false },
             impressions: { value: googleImpressions.count, loading: false },
-            ctr: { value: googleCTR.percentage, loading: false },
+            ctr: { value: googleCTR.ratio, loading: false },
             conversions: { value: googleConversions.count, loading: false },
           },
         });
@@ -110,80 +163,57 @@ export default function PlatformComparisonPage() {
   }, [startDate, endDate]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-primary-900">Platform Comparison</h2>
-        <DateRangePicker />
+    <div className="space-y-10">
+      {/* Header Section */}
+      <div className="border-b border-primary-900/10 -mx-20 px-20 pb-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-primary-900">Platform Comparison</h1>
+            <p className="text-sm text-primary-600 mt-1">Compare performance metrics across platforms</p>
+          </div>
+          <DateRangePicker />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Meta Metrics */}
-        <div className="space-y-6">
-          <h3 className="text-xl font-semibold text-primary-800">Meta</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <MetricCard
-              title="Ad Spend"
-              value={metrics.meta.adSpend.value}
-              format="currency"
-              loading={metrics.meta.adSpend.loading}
-            />
-            <MetricCard
-              title="Clicks"
-              value={metrics.meta.clicks.value}
-              loading={metrics.meta.clicks.loading}
-            />
-            <MetricCard
-              title="Impressions"
-              value={metrics.meta.impressions.value}
-              loading={metrics.meta.impressions.loading}
-            />
-            <MetricCard
-              title="CTR"
-              value={metrics.meta.ctr.value}
-              format="percentage"
-              loading={metrics.meta.ctr.loading}
-            />
-            <MetricCard
-              title="Conversions"
-              value={metrics.meta.conversions.value}
-              loading={metrics.meta.conversions.loading}
-            />
+      {/* Main Content */}
+      <div className="space-y-10">
+        {/* Performance Metrics */}
+        <section>
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-1 h-5 bg-primary-900 rounded-full" />
+            <h2 className="text-base font-medium text-primary-900">Performance Metrics</h2>
           </div>
-        </div>
-
-        {/* Google Metrics */}
-        <div className="space-y-6">
-          <h3 className="text-xl font-semibold text-primary-800">Google</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <MetricCard
-              title="Ad Spend"
-              value={metrics.google.adSpend.value}
-              format="currency"
-              loading={metrics.google.adSpend.loading}
-            />
-            <MetricCard
-              title="Clicks"
-              value={metrics.google.clicks.value}
-              loading={metrics.google.clicks.loading}
-            />
-            <MetricCard
-              title="Impressions"
-              value={metrics.google.impressions.value}
-              loading={metrics.google.impressions.loading}
-            />
-            <MetricCard
-              title="CTR"
-              value={metrics.google.ctr.value}
-              format="percentage"
-              loading={metrics.google.ctr.loading}
-            />
-            <MetricCard
-              title="Conversions"
-              value={metrics.google.conversions.value}
-              loading={metrics.google.conversions.loading}
-            />
-          </div>
-        </div>
+          <ComparisonCard
+            title="Key Metrics Comparison"
+            metrics={[
+              {
+                title: "Ad Spend",
+                meta: metrics.meta.adSpend.value,
+                google: metrics.google.adSpend.value,
+                format: "currency",
+                loading: metrics.meta.adSpend.loading || metrics.google.adSpend.loading,
+              },
+              {
+                title: "Clicks",
+                meta: metrics.meta.clicks.value,
+                google: metrics.google.clicks.value,
+                loading: metrics.meta.clicks.loading || metrics.google.clicks.loading,
+              },
+              {
+                title: "Impressions",
+                meta: metrics.meta.impressions.value,
+                google: metrics.google.impressions.value,
+                loading: metrics.meta.impressions.loading || metrics.google.impressions.loading,
+              },
+              {
+                title: "Conversions",
+                meta: metrics.meta.conversions.value,
+                google: metrics.google.conversions.value,
+                loading: metrics.meta.conversions.loading || metrics.google.conversions.loading,
+              },
+            ]}
+          />
+        </section>
       </div>
     </div>
   );

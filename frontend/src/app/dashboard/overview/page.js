@@ -5,28 +5,51 @@ import { fetchMetrics } from '@/lib/utils/api';
 import DateRangePicker from '@/components/ui/DateRangePicker';
 import MetricCard from '@/components/ui/MetricCard';
 import useDateRangeStore from '@/lib/store/dateRange';
-import { ArrowTrendingUpIcon, CurrencyDollarIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
+import { 
+  ShoppingBagIcon, 
+  CurrencyDollarIcon, 
+  ArrowTrendingUpIcon,
+  ChartBarIcon,
+} from '@heroicons/react/24/outline';
 
-const StatisticCard = ({ icon: Icon, label, value, loading, subtext = null }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-primary-100 p-6 transition-all duration-200 hover:shadow-md">
+const StatisticCard = ({ icon: Icon, label, value, loading, trend }) => (
+  <div className="bg-white rounded-xl p-6 border border-primary-100/40 hover:border-primary-200/60 transition-all duration-300 shadow-sm hover:shadow">
     <div className="flex items-start justify-between">
-      <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <Icon className="w-5 h-5 text-primary-500" />
-          <h3 className="text-sm font-medium text-primary-500">{label}</h3>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 text-primary-600">
+          <Icon className="w-5 h-5" />
+          <span className="text-sm font-medium">{label}</span>
         </div>
-        <div className="mt-4">
+        <div>
           <div className="text-2xl font-semibold text-primary-900">
-            {loading ? (
-              <div className="animate-pulse h-8 w-24 bg-primary-100 rounded"></div>
-            ) : (
-              value
-            )}
+            {loading ? 'Loading...' : value}
           </div>
-          {subtext && (
-            <div className="mt-2 text-sm text-primary-600">{subtext}</div>
+          {trend && !loading && (
+            <div className="mt-1 text-sm text-primary-500">
+              vs. last period
+            </div>
           )}
         </div>
+      </div>
+    </div>
+  </div>
+);
+
+const PlatformCard = ({ title, metrics = [], loading }) => (
+  <div className="bg-white rounded-xl p-6 border border-primary-100/40 hover:border-primary-200/60 transition-all duration-300 shadow-sm hover:shadow">
+    <div className="space-y-6">
+      <div className="flex items-center gap-2">
+        <ChartBarIcon className="w-5 h-5 text-primary-600" />
+        <h3 className="text-sm font-medium text-primary-600">{title}</h3>
+      </div>
+      <div className="space-y-4 pt-2">
+        {metrics.map((metric, index) => (
+          <MetricCard
+            key={index}
+            {...metric}
+            loading={loading}
+          />
+        ))}
       </div>
     </div>
   </div>
@@ -104,75 +127,81 @@ export default function OverviewPage() {
     fetchAllMetrics();
   }, [startDate, endDate]);
 
-  const getTotalAdSpend = () => {
-    if (metrics.metaAdSpend.loading || metrics.googleAdSpend.loading) return null;
-    return metrics.metaAdSpend.value + metrics.googleAdSpend.value;
-  };
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Header Section */}
-      <div className="bg-white border-b border-primary-100 pb-6">
+      <div className="border-b border-primary-900/10 -mx-20 px-20 pb-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold text-primary-900">Overview</h1>
+          <div>
+            <h1 className="text-2xl font-semibold text-primary-900">Overview</h1>
+            <p className="text-sm text-primary-500 mt-1">Track your key metrics and performance</p>
+          </div>
           <DateRangePicker />
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="space-y-8">
+      <div className="space-y-10">
         {/* Key Metrics Section */}
         <section>
-          <h2 className="text-lg font-semibold text-primary-800 mb-4">Key Metrics</h2>
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-1 h-5 bg-primary-900 rounded-full" />
+            <h2 className="text-base font-medium text-primary-900">Key Metrics</h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <StatisticCard
-              icon={ShoppingCartIcon}
+              icon={ShoppingBagIcon}
               label="Total Orders"
               value={metrics.orders.loading ? null : metrics.orders.value.toLocaleString('en-IN')}
               loading={metrics.orders.loading}
+              trend
             />
             <StatisticCard
               icon={CurrencyDollarIcon}
               label="Net Revenue"
               value={metrics.revenue.loading ? null : formatCurrency(metrics.revenue.value)}
               loading={metrics.revenue.loading}
+              trend
             />
             <StatisticCard
               icon={ArrowTrendingUpIcon}
               label="Marketing Efficiency Ratio (MER)"
               value={metrics.mer.loading ? null : `${metrics.mer.value.toFixed(2)}%`}
               loading={metrics.mer.loading}
-              subtext={metrics.mer.details ? `Total Spend: ${formatCurrency(metrics.mer.details.totalSpend)}` : null}
+              trend
             />
           </div>
         </section>
 
         {/* Ad Platform Performance */}
         <section>
-          <h2 className="text-lg font-semibold text-primary-800 mb-4">Ad Platform Performance</h2>
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-1 h-5 bg-primary-900 rounded-full" />
+            <h2 className="text-base font-medium text-primary-900">Ad Platform Performance</h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white rounded-xl shadow-sm border border-primary-100 p-6">
-              <h3 className="text-sm font-medium text-primary-500 mb-4">Meta Advertising</h3>
-              <div className="space-y-4">
-                <MetricCard
-                  title="Ad Spend"
-                  value={metrics.metaAdSpend.value}
-                  format="currency"
-                  loading={metrics.metaAdSpend.loading}
-                />
-              </div>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm border border-primary-100 p-6">
-              <h3 className="text-sm font-medium text-primary-500 mb-4">Google Advertising</h3>
-              <div className="space-y-4">
-                <MetricCard
-                  title="Ad Spend"
-                  value={metrics.googleAdSpend.value}
-                  format="currency"
-                  loading={metrics.googleAdSpend.loading}
-                />
-              </div>
-            </div>
+            <PlatformCard
+              title="Meta Advertising"
+              metrics={[
+                {
+                  title: "Ad Spend",
+                  value: metrics.metaAdSpend.value,
+                  format: "currency",
+                }
+              ]}
+              loading={metrics.metaAdSpend.loading}
+            />
+            <PlatformCard
+              title="Google Advertising"
+              metrics={[
+                {
+                  title: "Ad Spend",
+                  value: metrics.googleAdSpend.value,
+                  format: "currency",
+                }
+              ]}
+              loading={metrics.googleAdSpend.loading}
+            />
           </div>
         </section>
       </div>
