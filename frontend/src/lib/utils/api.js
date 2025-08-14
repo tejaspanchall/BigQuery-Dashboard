@@ -63,12 +63,32 @@ export const fetchMetrics = async (endpoint, startDate, endDate) => {
       return { count: Number(data.count) || 0 };
     }
     if (endpoint.includes('/ctr')) {
-      return { ratio: Number(data.ratio) || 0 };
+      // Just return the ratio from the response
+      return {
+        ratio: Number(data.ratio) || 0
+      };
     }
     
     return data;
   } catch (error) {
     console.error(`Error fetching metrics from ${endpoint}:`, error);
+    throw error;
+  }
+};
+
+export const fetchCTR = async (endpoint, startDate, endDate) => {
+  try {
+    const response = await api.post(endpoint, {
+      startDate: formatDateForAPI(startDate),
+      endDate: formatDateForAPI(endDate),
+    });
+
+    const { data } = response.data || {}; // Destructure the nested data
+    return {
+      ratio: Number(data?.ratio) || 0
+    };
+  } catch (error) {
+    console.error(`Error fetching CTR from ${endpoint}:`, error);
     throw error;
   }
 };

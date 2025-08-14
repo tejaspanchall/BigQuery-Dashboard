@@ -342,7 +342,7 @@
 									"value": "application/json"
 								}
 							],
-							"body": "{\n    \"ratio\": 2.8\n}"
+							"body": "{\n    \"ratio\": 2.8,\n    \"daily_data\": [\n        {\n            \"date\": \"2024-01-01\",\n            \"ctr\": 2.5\n        },\n        {\n            \"date\": \"2024-01-02\",\n            \"ctr\": 3.1\n        }\n    ]\n}"
 						}
 					]
 				},
@@ -542,7 +542,7 @@
 									"value": "application/json"
 								}
 							],
-							"body": "{\n    \"ratio\": 2.8\n}"
+							"body": "{\n    \"ratio\": 2.8,\n    \"daily_data\": [\n        {\n            \"date\": \"2024-01-01\",\n            \"ctr\": 2.7\n        },\n        {\n            \"date\": \"2024-01-02\",\n            \"ctr\": 2.9\n        }\n    ]\n}"
 						}
 					]
 				},

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchMetrics } from '@/lib/utils/api';
+import { fetchMetrics, fetchCTR } from '@/lib/utils/api';
 import DateRangePicker from '@/components/ui/DateRangePicker';
 import MetricCard from '@/components/ui/MetricCard';
 import useDateRangeStore from '@/lib/store/dateRange';
@@ -63,6 +63,8 @@ export default function OverviewPage() {
     mer: { value: 0, details: null, loading: true },
     metaAdSpend: { value: 0, dailyData: [], loading: true },
     googleAdSpend: { value: 0, dailyData: [], loading: true },
+    metaCTR: { value: 0, loading: true },
+    googleCTR: { value: 0, loading: true },
   });
 
   const formatCurrency = (value) => {
@@ -82,15 +84,19 @@ export default function OverviewPage() {
         mer: { ...prev.mer, loading: true },
         metaAdSpend: { ...prev.metaAdSpend, loading: true },
         googleAdSpend: { ...prev.googleAdSpend, loading: true },
+        metaCTR: { ...prev.metaCTR, loading: true },
+        googleCTR: { ...prev.googleCTR, loading: true },
       }));
 
       try {
-        const [orders, revenue, mer, metaAdSpend, googleAdSpend] = await Promise.all([
+        const [orders, revenue, mer, metaAdSpend, googleAdSpend, metaCTR, googleCTR] = await Promise.all([
           fetchMetrics('/api/shopify/orders', startDate, endDate),
           fetchMetrics('/api/shopify/net-revenue', startDate, endDate),
           fetchMetrics('/api/shopify/mer', startDate, endDate),
           fetchMetrics('/api/meta/adspend', startDate, endDate),
           fetchMetrics('/api/google/adspend', startDate, endDate),
+          fetchCTR('/api/meta/ctr', startDate, endDate),
+          fetchCTR('/api/google/ctr', startDate, endDate),
         ]);
 
         setMetrics({
@@ -111,6 +117,14 @@ export default function OverviewPage() {
             dailyData: googleAdSpend.daily_data || [],
             loading: false 
           },
+          metaCTR: {
+            value: metaCTR.ratio,
+            loading: false
+          },
+          googleCTR: {
+            value: googleCTR.ratio,
+            loading: false
+          },
         });
       } catch (error) {
         console.error('Error fetching metrics:', error);
@@ -120,6 +134,8 @@ export default function OverviewPage() {
           mer: { ...prev.mer, loading: false, error: true },
           metaAdSpend: { ...prev.metaAdSpend, loading: false, error: true },
           googleAdSpend: { ...prev.googleAdSpend, loading: false, error: true },
+          metaCTR: { ...prev.metaCTR, loading: false, error: true },
+          googleCTR: { ...prev.googleCTR, loading: false, error: true },
         }));
       }
     };
@@ -187,9 +203,14 @@ export default function OverviewPage() {
                   title: "Ad Spend",
                   value: metrics.metaAdSpend.value,
                   format: "currency",
+                },
+                {
+                  title: "CTR",
+                  value: metrics.metaCTR.value,
+                  format: "percentage",
                 }
               ]}
-              loading={metrics.metaAdSpend.loading}
+              loading={metrics.metaAdSpend.loading || metrics.metaCTR.loading}
             />
             <PlatformCard
               title="Google Advertising"
@@ -198,9 +219,14 @@ export default function OverviewPage() {
                   title: "Ad Spend",
                   value: metrics.googleAdSpend.value,
                   format: "currency",
+                },
+                {
+                  title: "CTR",
+                  value: metrics.googleCTR.value,
+                  format: "percentage",
                 }
               ]}
-              loading={metrics.googleAdSpend.loading}
+              loading={metrics.googleAdSpend.loading || metrics.googleCTR.loading}
             />
           </div>
         </section>

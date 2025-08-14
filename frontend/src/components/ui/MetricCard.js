@@ -13,7 +13,9 @@ const MetricCard = ({ title, value, format = 'number', loading = false }) => {
           maximumFractionDigits: 0,
         }).format(val);
       case 'percentage':
-        return `${val.toFixed(2)}%`;
+        // Ensure we have a valid number and format it with 2 decimal places
+        const numVal = Number(val);
+        return !isNaN(numVal) ? `${numVal.toFixed(2)}%` : 'N/A';
       default:
         return new Intl.NumberFormat('en-IN').format(val);
     }

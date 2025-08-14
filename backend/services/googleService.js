@@ -160,7 +160,7 @@ class GoogleService {
    * Get Google CTR data for specific dates
    * @param {string} startDate - Start date in YYYY-MM-DD format
    * @param {string} endDate - End date in YYYY-MM-DD format
-   * @returns {Promise<Array>} Daily CTR data for Google
+   * @returns {Promise<Object>} CTR data with total and daily values
    */
   async getCTR(startDate, endDate) {
     try {
@@ -169,6 +169,8 @@ class GoogleService {
       const [rows] = await table.getRows();
       
       const ctrByDate = {};
+      let totalCTR = 0;
+      let daysCount = 0;
       
       rows.forEach(row => {
         try {
@@ -182,8 +184,10 @@ class GoogleService {
             if (!isNaN(ctr)) {
               if (!ctrByDate[date]) {
                 ctrByDate[date] = 0;
+                daysCount++; // Count unique days
               }
               ctrByDate[date] += ctr;
+              totalCTR += ctr;
             }
           }
         } catch (e) {
@@ -191,13 +195,19 @@ class GoogleService {
         }
       });
       
-      // Convert to array format with summed CTR values
-      const result = Object.entries(ctrByDate).map(([date, totalCTR]) => ({
+      // Calculate average CTR across all days
+      const averageCTR = daysCount > 0 ? totalCTR / daysCount : 0;
+      
+      // Convert daily data to array format
+      const dailyData = Object.entries(ctrByDate).map(([date, ctr]) => ({
         date,
-        ctr: parseFloat(totalCTR.toFixed(2))
+        ctr: parseFloat(ctr.toFixed(2))
       })).sort((a, b) => a.date.localeCompare(b.date));
       
-      return result;
+      return {
+        ratio: parseFloat(averageCTR.toFixed(2)), // Total CTR for the period
+        daily_data: dailyData // Keep daily breakdown
+      };
       
     } catch (error) {
       console.error('Error fetching Google CTR:', error);
