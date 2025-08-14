@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const metaService = require('../services/metaService');
+const jwt = require('jsonwebtoken');
 
 // Helper function to validate dates
 const validateDates = (startDate, endDate) => {
@@ -13,10 +14,25 @@ const validateDates = (startDate, endDate) => {
   return null;
 };
 
+// Helper function to validate token
+const validateToken = (req, res, next) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ error: 'No token, authorization denied' });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.status(401).json({ error: 'Token is not valid' });
+  }
+};
+
 /**
  * Get daily ad spend data for Meta (Facebook)
  */
-router.post('/adspend', async (req, res) => {
+router.post('/adspend', validateToken, async (req, res) => {
   try {
     const { startDate, endDate } = req.body || {};
     
@@ -42,7 +58,7 @@ router.post('/adspend', async (req, res) => {
 /**
  * Get daily clicks data for Meta (Facebook)
  */
-router.post('/clicks', async (req, res) => {
+router.post('/clicks', validateToken, async (req, res) => {
   try {
     const { startDate, endDate } = req.body || {};
     
@@ -68,7 +84,7 @@ router.post('/clicks', async (req, res) => {
 /**
  * Get daily impressions data for Meta (Facebook)
  */
-router.post('/impressions', async (req, res) => {
+router.post('/impressions', validateToken, async (req, res) => {
   try {
     const { startDate, endDate } = req.body || {};
     
@@ -94,7 +110,7 @@ router.post('/impressions', async (req, res) => {
 /**
  * Get daily CTR data for Meta (Facebook)
  */
-router.post('/ctr', async (req, res) => {
+router.post('/ctr', validateToken, async (req, res) => {
   try {
     const { startDate, endDate } = req.body || {};
     
@@ -120,7 +136,7 @@ router.post('/ctr', async (req, res) => {
 /**
  * Get daily conversions data for Meta (Facebook)
  */
-router.post('/conversions', async (req, res) => {
+router.post('/conversions', validateToken, async (req, res) => {
   try {
     const { startDate, endDate } = req.body || {};
     
