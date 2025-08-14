@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
 
 // Mount routes
 app.use('/api/auth', authRoutes);
-app.use('/api/bigquery', auth, bigQueryRoutes); // Protected routes
+app.use('/api/bigquery', bigQueryRoutes); // Removed auth middleware
 
 // Error handling middleware
 app.use((err, req, res, next) => {
