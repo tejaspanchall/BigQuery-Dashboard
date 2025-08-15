@@ -23,6 +23,20 @@ export const login = async (password) => {
   return response.data;
 };
 
+export const fetchTrends = async (startDate, endDate) => {
+  try {
+    const response = await api.post('/api/trends/daily', {
+      startDate: formatDateForAPI(startDate),
+      endDate: formatDateForAPI(endDate),
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching trend data:', error);
+    throw error;
+  }
+};
+
 export const fetchMetrics = async (endpoint, startDate, endDate) => {
   try {
     const response = await api.post(endpoint, {

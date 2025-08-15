@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchMetrics, fetchCTR } from '@/lib/utils/api';
+import { fetchMetrics, fetchCTR, fetchTrends } from '@/lib/utils/api';
 import DateRangePicker from '@/components/ui/DateRangePicker';
 import MetricCard from '@/components/ui/MetricCard';
 import useDateRangeStore from '@/lib/store/dateRange';
@@ -11,6 +11,16 @@ import {
   ArrowTrendingUpIcon,
   ChartBarIcon,
 } from '@heroicons/react/24/outline';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer 
+} from 'recharts';
 
 const StatisticCard = ({ icon: Icon, label, value, loading, trend }) => (
   <div className="bg-white rounded-xl p-6 border border-primary-100/40 hover:border-primary-200/60 transition-all duration-300 shadow-sm hover:shadow">
@@ -66,6 +76,7 @@ export default function OverviewPage() {
     metaCTR: { value: 0, loading: true },
     googleCTR: { value: 0, loading: true },
   });
+  const [trendData, setTrendData] = useState({ data: [], loading: true });
 
   const formatCurrency = (value) => {
     if (typeof value !== 'number') return '₹0';
@@ -87,9 +98,19 @@ export default function OverviewPage() {
         metaCTR: { ...prev.metaCTR, loading: true },
         googleCTR: { ...prev.googleCTR, loading: true },
       }));
+      setTrendData(prev => ({ ...prev, loading: true }));
 
       try {
-        const [orders, revenue, mer, metaAdSpend, googleAdSpend, metaCTR, googleCTR] = await Promise.all([
+        const [
+          orders, 
+          revenue, 
+          mer, 
+          metaAdSpend, 
+          googleAdSpend, 
+          metaCTR, 
+          googleCTR,
+          trends
+        ] = await Promise.all([
           fetchMetrics('/api/shopify/orders', startDate, endDate),
           fetchMetrics('/api/shopify/net-revenue', startDate, endDate),
           fetchMetrics('/api/shopify/mer', startDate, endDate),
@@ -97,6 +118,7 @@ export default function OverviewPage() {
           fetchMetrics('/api/google/adspend', startDate, endDate),
           fetchCTR('/api/meta/ctr', startDate, endDate),
           fetchCTR('/api/google/ctr', startDate, endDate),
+          fetchTrends(startDate, endDate),
         ]);
 
         setMetrics({
@@ -126,6 +148,11 @@ export default function OverviewPage() {
             loading: false
           },
         });
+
+        setTrendData({
+          data: trends.data,
+          loading: false,
+        });
       } catch (error) {
         console.error('Error fetching metrics:', error);
         setMetrics((prev) => ({
@@ -137,6 +164,7 @@ export default function OverviewPage() {
           metaCTR: { ...prev.metaCTR, loading: false, error: true },
           googleCTR: { ...prev.googleCTR, loading: false, error: true },
         }));
+        setTrendData(prev => ({ ...prev, loading: false, error: true }));
       }
     };
 
@@ -228,6 +256,106 @@ export default function OverviewPage() {
               ]}
               loading={metrics.googleAdSpend.loading || metrics.googleCTR.loading}
             />
+          </div>
+        </section>
+
+        {/* Trend Chart Section */}
+        <section>
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-1 h-5 bg-primary-900 rounded-full" />
+            <h2 className="text-base font-medium text-primary-900">Performance Trends</h2>
+          </div>
+          <div className="bg-white rounded-xl p-6 border border-primary-100/40 shadow-sm">
+            {trendData.loading ? (
+              <div className="h-[400px] flex items-center justify-center">
+                <p className="text-primary-500">Loading trend data...</p>
+              </div>
+            ) : trendData.error ? (
+              <div className="h-[400px] flex items-center justify-center">
+                <p className="text-red-500">Error loading trend data</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={400}>
+                <LineChart
+                  data={trendData.data}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 20,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fill: '#6B7280' }}
+                    tickFormatter={(value) => new Date(value).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                  />
+                  <YAxis 
+                    yAxisId="left"
+                    tick={{ fill: '#6B7280' }}
+                    tickFormatter={(value) => `₹${value.toLocaleString('en-IN')}`}
+                  />
+                  <YAxis 
+                    yAxisId="right" 
+                    orientation="right"
+                    tick={{ fill: '#6B7280' }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'white',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '0.5rem',
+                    }}
+                    formatter={(value, name) => {
+                      switch (name) {
+                        case 'order_count':
+                          return [value.toLocaleString('en-IN'), 'Orders'];
+                        case 'total_spend':
+                          return [`₹${value.toLocaleString('en-IN')}`, 'Ad Spend'];
+                        case 'net_revenue':
+                          return [`₹${value.toLocaleString('en-IN')}`, 'Revenue'];
+                        default:
+                          return [value, name];
+                      }
+                    }}
+                    labelFormatter={(label) => new Date(label).toLocaleDateString('en-IN', { 
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  />
+                  <Legend />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="total_spend"
+                    name="Ad Spend"
+                    stroke="#EF4444"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="net_revenue"
+                    name="Revenue"
+                    stroke="#10B981"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="order_count"
+                    name="Orders"
+                    stroke="#6366F1"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </section>
       </div>
