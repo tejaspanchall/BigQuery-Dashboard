@@ -1,61 +1,66 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchMetrics } from '@/lib/utils/api';
+import { fetchMetrics, fetchCTR, fetchClicks, fetchImpressions } from '@/lib/utils/api';
 import DateRangePicker from '@/components/ui/DateRangePicker';
 import useDateRangeStore from '@/lib/store/dateRange';
-import { ChartBarIcon } from '@heroicons/react/24/outline';
 
-const MetricRow = ({ title, meta, google, format = 'number', loading }) => {
-  const formatValue = (val) => {
-    if (loading) return 'Loading...';
-    if (val === null || val === undefined) return 'N/A';
-    
-    switch (format) {
-      case 'currency':
-        return new Intl.NumberFormat('en-IN', {
-          style: 'currency',
-          currency: 'INR',
-          maximumFractionDigits: 0,
-        }).format(val);
-      case 'percentage':
-        return `${val.toFixed(2)}%`;
-      default:
-        return new Intl.NumberFormat('en-IN').format(val);
-    }
-  };
-
-  return (
-    <div className="grid grid-cols-3 gap-2 sm:gap-4 py-3 sm:py-4 border-b border-primary-900/10 last:border-0">
-      <div className="text-xs sm:text-sm text-primary-900">{title}</div>
-      <div className="text-xs sm:text-sm font-medium text-primary-900">{formatValue(meta)}</div>
-      <div className="text-xs sm:text-sm font-medium text-primary-900">{formatValue(google)}</div>
-    </div>
-  );
+const formatValue = (val, format = 'number', loading = false) => {
+  if (loading) return 'Loading...';
+  if (val === null || val === undefined) return 'Loading...';
+  
+  switch (format) {
+    case 'currency':
+      return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0,
+      }).format(val);
+    case 'percentage':
+      return `${val.toFixed(2)}%`;
+    default:
+      return new Intl.NumberFormat('en-IN').format(val);
+  }
 };
 
-const ComparisonCard = ({ title, metrics = [], loading }) => (
-  <div className="bg-white rounded-xl p-4 sm:p-6 border border-primary-900/10 hover:border-primary-900/20 transition-all duration-300 shadow-sm hover:shadow">
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex items-center gap-2 pb-3 sm:pb-4 border-b border-primary-900/10">
-        <ChartBarIcon className="w-5 h-5 text-primary-900" />
-        <h3 className="text-xs sm:text-sm font-medium text-primary-900">{title}</h3>
-      </div>
-      <div className="grid grid-cols-3 gap-2 sm:gap-4">
-        <div className="text-[10px] sm:text-xs uppercase tracking-wider text-primary-900 font-medium">Metric</div>
-        <div className="text-[10px] sm:text-xs uppercase tracking-wider text-primary-900 font-medium">Meta</div>
-        <div className="text-[10px] sm:text-xs uppercase tracking-wider text-primary-900 font-medium">Google</div>
-      </div>
-      <div className="space-y-1 sm:space-y-2">
-        {metrics.map((metric, index) => (
-          <MetricRow
-            key={index}
-            {...metric}
-            loading={loading}
-          />
-        ))}
-      </div>
-    </div>
+const ComparisonTable = ({ data, loading }) => (
+  <div className="bg-white rounded-xl overflow-hidden border border-primary-900/10">
+    <table className="w-full">
+      <thead>
+        <tr className="border-b border-primary-900/10">
+          <th className="text-left p-4 text-xs font-medium text-primary-600">Metrics</th>
+          <th className="text-right p-4 text-xs font-medium text-primary-600">Meta</th>
+          <th className="text-right p-4 text-xs font-medium text-primary-600">Google</th>
+          <th className="text-right p-4 text-xs font-medium text-primary-600">Shopify</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr className="border-b border-primary-900/10">
+          <td className="p-4 text-sm text-primary-900">Ad Spend / Revenue</td>
+          <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.meta.adSpend?.amount, 'currency', loading)}</td>
+          <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.google.adSpend?.amount, 'currency', loading)}</td>
+          <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.shopify.revenue?.amount, 'currency', loading)}</td>
+        </tr>
+        <tr className="border-b border-primary-900/10">
+          <td className="p-4 text-sm text-primary-900">Clicks / Orders</td>
+          <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.meta.clicks?.count, 'number', loading)}</td>
+          <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.google.clicks?.count, 'number', loading)}</td>
+          <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.shopify.orders?.count, 'number', loading)}</td>
+        </tr>
+        <tr className="border-b border-primary-900/10">
+          <td className="p-4 text-sm text-primary-900">Impressions</td>
+          <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.meta.impressions?.count, 'number', loading)}</td>
+          <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.google.impressions?.count, 'number', loading)}</td>
+          <td className="p-4 text-sm text-right text-primary-900">-</td>
+        </tr>
+        <tr>
+          <td className="p-4 text-sm text-primary-900">CTR</td>
+          <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.meta.ctr?.ratio, 'percentage', loading)}</td>
+          <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.google.ctr?.ratio, 'percentage', loading)}</td>
+          <td className="p-4 text-sm text-right text-primary-900">-</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 );
 
@@ -63,39 +68,43 @@ export default function PlatformComparisonPage() {
   const { startDate, endDate } = useDateRangeStore();
   const [metrics, setMetrics] = useState({
     meta: {
-      adSpend: { loading: true },
-      clicks: { loading: true },
-      impressions: { loading: true },
-      ctr: { loading: true },
-      conversions: { loading: true },
+      adSpend: null,
+      clicks: null,
+      impressions: null,
+      ctr: null,
     },
     google: {
-      adSpend: { loading: true },
-      clicks: { loading: true },
-      impressions: { loading: true },
-      ctr: { loading: true },
-      conversions: { loading: true },
+      adSpend: null,
+      clicks: null,
+      impressions: null,
+      ctr: null,
     },
+    shopify: {
+      orders: null,
+      revenue: null,
+    }
   });
 
   useEffect(() => {
     const fetchPlatformMetrics = async () => {
-      setMetrics((prev) => ({
+      setMetrics({
         meta: {
-          adSpend: { loading: true },
-          clicks: { loading: true },
-          impressions: { loading: true },
-          ctr: { loading: true },
-          conversions: { loading: true },
+          adSpend: null,
+          clicks: null,
+          impressions: null,
+          ctr: null,
         },
         google: {
-          adSpend: { loading: true },
-          clicks: { loading: true },
-          impressions: { loading: true },
-          ctr: { loading: true },
-          conversions: { loading: true },
+          adSpend: null,
+          clicks: null,
+          impressions: null,
+          ctr: null,
         },
-      }));
+        shopify: {
+          orders: null,
+          revenue: null,
+        }
+      });
 
       try {
         const [
@@ -103,64 +112,70 @@ export default function PlatformComparisonPage() {
           metaClicks,
           metaImpressions,
           metaCTR,
-          metaConversions,
           googleAdSpend,
           googleClicks,
           googleImpressions,
           googleCTR,
-          googleConversions,
+          shopifyOrders,
+          shopifyRevenue,
         ] = await Promise.all([
           fetchMetrics('/api/meta/adspend', startDate, endDate),
-          fetchMetrics('/api/meta/clicks', startDate, endDate),
-          fetchMetrics('/api/meta/impressions', startDate, endDate),
-          fetchMetrics('/api/meta/ctr', startDate, endDate),
-          fetchMetrics('/api/meta/conversions', startDate, endDate),
+          fetchClicks('/api/meta/clicks', startDate, endDate),
+          fetchImpressions('/api/meta/impressions', startDate, endDate),
+          fetchCTR('/api/meta/ctr', startDate, endDate),
           fetchMetrics('/api/google/adspend', startDate, endDate),
-          fetchMetrics('/api/google/clicks', startDate, endDate),
-          fetchMetrics('/api/google/impressions', startDate, endDate),
-          fetchMetrics('/api/google/ctr', startDate, endDate),
-          fetchMetrics('/api/google/conversions', startDate, endDate),
+          fetchClicks('/api/google/clicks', startDate, endDate),
+          fetchImpressions('/api/google/impressions', startDate, endDate),
+          fetchCTR('/api/google/ctr', startDate, endDate),
+          fetchMetrics('/api/shopify/orders', startDate, endDate),
+          fetchMetrics('/api/shopify/net-revenue', startDate, endDate),
         ]);
 
         setMetrics({
           meta: {
-            adSpend: { value: metaAdSpend.amount, loading: false },
-            clicks: { value: metaClicks.count, loading: false },
-            impressions: { value: metaImpressions.count, loading: false },
-            ctr: { value: metaCTR.ratio, loading: false },
-            conversions: { value: metaConversions.count, loading: false },
+            adSpend: metaAdSpend,
+            clicks: metaClicks,
+            impressions: metaImpressions,
+            ctr: metaCTR,
           },
           google: {
-            adSpend: { value: googleAdSpend.amount, loading: false },
-            clicks: { value: googleClicks.count, loading: false },
-            impressions: { value: googleImpressions.count, loading: false },
-            ctr: { value: googleCTR.ratio, loading: false },
-            conversions: { value: googleConversions.count, loading: false },
+            adSpend: googleAdSpend,
+            clicks: googleClicks,
+            impressions: googleImpressions,
+            ctr: googleCTR,
           },
+          shopify: {
+            orders: shopifyOrders,
+            revenue: shopifyRevenue,
+          }
         });
       } catch (error) {
         console.error('Error fetching platform metrics:', error);
-        setMetrics((prev) => ({
+        setMetrics({
           meta: {
-            adSpend: { error: true, loading: false },
-            clicks: { error: true, loading: false },
-            impressions: { error: true, loading: false },
-            ctr: { error: true, loading: false },
-            conversions: { error: true, loading: false },
+            adSpend: { error: true },
+            clicks: { error: true },
+            impressions: { error: true },
+            ctr: { error: true },
           },
           google: {
-            adSpend: { error: true, loading: false },
-            clicks: { error: true, loading: false },
-            impressions: { error: true, loading: false },
-            ctr: { error: true, loading: false },
-            conversions: { error: true, loading: false },
+            adSpend: { error: true },
+            clicks: { error: true },
+            impressions: { error: true },
+            ctr: { error: true },
           },
-        }));
+          shopify: {
+            orders: { error: true },
+            revenue: { error: true },
+          }
+        });
       }
     };
 
     fetchPlatformMetrics();
   }, [startDate, endDate]);
+
+  const isLoading = !metrics.meta.adSpend || !metrics.google.adSpend || !metrics.shopify.revenue;
 
   return (
     <div className="space-y-6 sm:space-y-10">
@@ -176,44 +191,8 @@ export default function PlatformComparisonPage() {
       </div>
 
       {/* Main Content */}
-      <div className="space-y-6 sm:space-y-10">
-        {/* Performance Metrics */}
-        <section>
-          <div className="flex items-center gap-2 mb-4 sm:mb-6">
-            <div className="w-1 h-5 bg-primary-900 rounded-full" />
-            <h2 className="text-sm sm:text-base font-medium text-primary-900">Performance Metrics</h2>
-          </div>
-          <ComparisonCard
-            title="Key Metrics Comparison"
-            metrics={[
-              {
-                title: "Ad Spend",
-                meta: metrics.meta.adSpend.value,
-                google: metrics.google.adSpend.value,
-                format: "currency",
-                loading: metrics.meta.adSpend.loading || metrics.google.adSpend.loading,
-              },
-              {
-                title: "Clicks",
-                meta: metrics.meta.clicks.value,
-                google: metrics.google.clicks.value,
-                loading: metrics.meta.clicks.loading || metrics.google.clicks.loading,
-              },
-              {
-                title: "Impressions",
-                meta: metrics.meta.impressions.value,
-                google: metrics.google.impressions.value,
-                loading: metrics.meta.impressions.loading || metrics.google.impressions.loading,
-              },
-              {
-                title: "Conversions",
-                meta: metrics.meta.conversions.value,
-                google: metrics.google.conversions.value,
-                loading: metrics.meta.conversions.loading || metrics.google.conversions.loading,
-              },
-            ]}
-          />
-        </section>
+      <div className="space-y-6">
+        <ComparisonTable data={metrics} loading={isLoading} />
       </div>
     </div>
   );

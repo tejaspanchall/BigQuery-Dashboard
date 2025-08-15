@@ -75,6 +75,7 @@ class MetaService {
       const [rows] = await table.getRows();
       
       const clicksByDate = {};
+      let totalClicks = 0;
       
       rows.forEach(row => {
         try {
@@ -90,6 +91,7 @@ class MetaService {
                 clicksByDate[date] = 0;
               }
               clicksByDate[date] += clicks;
+              totalClicks += clicks;
             }
           }
         } catch (e) {
@@ -97,10 +99,13 @@ class MetaService {
         }
       });
       
-      return Object.entries(clicksByDate).map(([date, clicks]) => ({
-        date,
-        clicks
-      })).sort((a, b) => a.date.localeCompare(b.date));
+      return {
+        count: totalClicks,
+        daily_data: Object.entries(clicksByDate).map(([date, clicks]) => ({
+          date,
+          clicks
+        })).sort((a, b) => a.date.localeCompare(b.date))
+      };
       
     } catch (error) {
       console.error('Error fetching Meta clicks:', error);
@@ -121,6 +126,7 @@ class MetaService {
       const [rows] = await table.getRows();
       
       const impressionsByDate = {};
+      let totalImpressions = 0;
       
       rows.forEach(row => {
         try {
@@ -136,6 +142,7 @@ class MetaService {
                 impressionsByDate[date] = 0;
               }
               impressionsByDate[date] += impressions;
+              totalImpressions += impressions;
             }
           }
         } catch (e) {
@@ -143,10 +150,13 @@ class MetaService {
         }
       });
       
-      return Object.entries(impressionsByDate).map(([date, impressions]) => ({
-        date,
-        impressions
-      })).sort((a, b) => a.date.localeCompare(b.date));
+      return {
+        count: totalImpressions,
+        daily_data: Object.entries(impressionsByDate).map(([date, impressions]) => ({
+          date,
+          impressions
+        })).sort((a, b) => a.date.localeCompare(b.date))
+      };
       
     } catch (error) {
       console.error('Error fetching Meta impressions:', error);

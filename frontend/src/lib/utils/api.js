@@ -37,6 +37,48 @@ export const fetchTrends = async (startDate, endDate) => {
   }
 };
 
+export const fetchClicks = async (endpoint, startDate, endDate) => {
+  try {
+    const response = await api.post(endpoint, {
+      startDate: formatDateForAPI(startDate),
+      endDate: formatDateForAPI(endDate),
+    });
+
+    const { data } = response.data || {};
+    return {
+      count: Number(data?.count) || 0,
+      daily_data: Array.isArray(data?.daily_data) ? data.daily_data.map(item => ({
+        date: item.date,
+        clicks: Number(item.clicks) || 0
+      })) : []
+    };
+  } catch (error) {
+    console.error(`Error fetching clicks from ${endpoint}:`, error);
+    throw error;
+  }
+};
+
+export const fetchImpressions = async (endpoint, startDate, endDate) => {
+  try {
+    const response = await api.post(endpoint, {
+      startDate: formatDateForAPI(startDate),
+      endDate: formatDateForAPI(endDate),
+    });
+
+    const { data } = response.data || {};
+    return {
+      count: Number(data?.count) || 0,
+      daily_data: Array.isArray(data?.daily_data) ? data.daily_data.map(item => ({
+        date: item.date,
+        impressions: Number(item.impressions) || 0
+      })) : []
+    };
+  } catch (error) {
+    console.error(`Error fetching impressions from ${endpoint}:`, error);
+    throw error;
+  }
+};
+
 export const fetchMetrics = async (endpoint, startDate, endDate) => {
   try {
     const response = await api.post(endpoint, {
@@ -71,15 +113,6 @@ export const fetchMetrics = async (endpoint, startDate, endDate) => {
           date: item.date,
           spend: Number(item.spend) || 0
         })) : []
-      };
-    }
-    if (endpoint.includes('/clicks')) {
-      return { count: Number(data.count) || 0 };
-    }
-    if (endpoint.includes('/ctr')) {
-      // Just return the ratio from the response
-      return {
-        ratio: Number(data.ratio) || 0
       };
     }
     
