@@ -36,7 +36,7 @@ class TrendService {
       const dailyData = {};
 
       // Process Meta spend
-      metaSpend.forEach(({ date, spend }) => {
+      metaSpend.daily_spends.forEach(({ date, spend }) => {
         if (!dailyData[date]) {
           dailyData[date] = { total_spend: 0, net_revenue: 0, order_count: 0 };
         }
@@ -44,7 +44,7 @@ class TrendService {
       });
 
       // Process Google spend
-      googleSpend.forEach(({ date, spend }) => {
+      googleSpend.daily_spends.forEach(({ date, spend }) => {
         if (!dailyData[date]) {
           dailyData[date] = { total_spend: 0, net_revenue: 0, order_count: 0 };
         }
