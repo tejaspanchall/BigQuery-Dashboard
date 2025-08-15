@@ -26,27 +26,27 @@ const MetricRow = ({ title, meta, google, format = 'number', loading }) => {
   };
 
   return (
-    <div className="grid grid-cols-3 gap-4 py-4 border-b border-primary-900/10 last:border-0">
-      <div className="text-sm text-primary-900">{title}</div>
-      <div className="text-sm font-medium text-primary-900">{formatValue(meta)}</div>
-      <div className="text-sm font-medium text-primary-900">{formatValue(google)}</div>
+    <div className="grid grid-cols-3 gap-2 sm:gap-4 py-3 sm:py-4 border-b border-primary-900/10 last:border-0">
+      <div className="text-xs sm:text-sm text-primary-900">{title}</div>
+      <div className="text-xs sm:text-sm font-medium text-primary-900">{formatValue(meta)}</div>
+      <div className="text-xs sm:text-sm font-medium text-primary-900">{formatValue(google)}</div>
     </div>
   );
 };
 
 const ComparisonCard = ({ title, metrics = [], loading }) => (
-  <div className="bg-white rounded-xl p-6 border border-primary-900/10 hover:border-primary-900/20 transition-all duration-300 shadow-sm hover:shadow">
-    <div className="space-y-6">
-      <div className="flex items-center gap-2 pb-4 border-b border-primary-900/10">
+  <div className="bg-white rounded-xl p-4 sm:p-6 border border-primary-900/10 hover:border-primary-900/20 transition-all duration-300 shadow-sm hover:shadow">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center gap-2 pb-3 sm:pb-4 border-b border-primary-900/10">
         <ChartBarIcon className="w-5 h-5 text-primary-900" />
-        <h3 className="text-sm font-medium text-primary-900">{title}</h3>
+        <h3 className="text-xs sm:text-sm font-medium text-primary-900">{title}</h3>
       </div>
-      <div className="grid grid-cols-3 gap-4">
-        <div className="text-xs uppercase tracking-wider text-primary-900 font-medium">Metric</div>
-        <div className="text-xs uppercase tracking-wider text-primary-900 font-medium">Meta</div>
-        <div className="text-xs uppercase tracking-wider text-primary-900 font-medium">Google</div>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        <div className="text-[10px] sm:text-xs uppercase tracking-wider text-primary-900 font-medium">Metric</div>
+        <div className="text-[10px] sm:text-xs uppercase tracking-wider text-primary-900 font-medium">Meta</div>
+        <div className="text-[10px] sm:text-xs uppercase tracking-wider text-primary-900 font-medium">Google</div>
       </div>
-      <div className="space-y-2">
+      <div className="space-y-1 sm:space-y-2">
         {metrics.map((metric, index) => (
           <MetricRow
             key={index}
@@ -163,25 +163,25 @@ export default function PlatformComparisonPage() {
   }, [startDate, endDate]);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 sm:space-y-10">
       {/* Header Section */}
-      <div className="border-b border-primary-900/10 -mx-20 px-20 pb-6">
+      <div className="border-b border-primary-900/10 -mx-4 sm:-mx-6 lg:-mx-20 px-4 sm:px-6 lg:px-20 pb-4 sm:pb-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-primary-900">Platform Comparison</h1>
-            <p className="text-sm text-primary-600 mt-1">Compare performance metrics across platforms</p>
+            <h1 className="text-xl sm:text-2xl font-semibold text-primary-900">Platform Comparison</h1>
+            <p className="text-xs sm:text-sm text-primary-600 mt-1">Compare performance metrics across platforms</p>
           </div>
           <DateRangePicker />
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="space-y-10">
+      <div className="space-y-6 sm:space-y-10">
         {/* Performance Metrics */}
         <section>
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 mb-4 sm:mb-6">
             <div className="w-1 h-5 bg-primary-900 rounded-full" />
-            <h2 className="text-base font-medium text-primary-900">Performance Metrics</h2>
+            <h2 className="text-sm sm:text-base font-medium text-primary-900">Performance Metrics</h2>
           </div>
           <ComparisonCard
             title="Key Metrics Comparison"

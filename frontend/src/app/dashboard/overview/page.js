@@ -23,19 +23,19 @@ import {
 } from 'recharts';
 
 const StatisticCard = ({ icon: Icon, label, value, loading, trend }) => (
-  <div className="bg-white rounded-xl p-6 border border-primary-100/40 hover:border-primary-200/60 transition-all duration-300 shadow-sm hover:shadow">
+  <div className="bg-white rounded-xl p-4 sm:p-6 border border-primary-100/40 hover:border-primary-200/60 transition-all duration-300 shadow-sm hover:shadow">
     <div className="flex items-start justify-between">
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         <div className="flex items-center gap-2 text-primary-600">
           <Icon className="w-5 h-5" />
-          <span className="text-sm font-medium">{label}</span>
+          <span className="text-xs sm:text-sm font-medium">{label}</span>
         </div>
         <div>
-          <div className="text-2xl font-semibold text-primary-900">
+          <div className="text-lg sm:text-2xl font-semibold text-primary-900">
             {loading ? 'Loading...' : value}
           </div>
           {trend && !loading && (
-            <div className="mt-1 text-sm text-primary-500">
+            <div className="mt-1 text-xs sm:text-sm text-primary-500">
               vs. last period
             </div>
           )}
@@ -46,13 +46,13 @@ const StatisticCard = ({ icon: Icon, label, value, loading, trend }) => (
 );
 
 const PlatformCard = ({ title, metrics = [], loading }) => (
-  <div className="bg-white rounded-xl p-6 border border-primary-100/40 hover:border-primary-200/60 transition-all duration-300 shadow-sm hover:shadow">
-    <div className="space-y-6">
+  <div className="bg-white rounded-xl p-4 sm:p-6 border border-primary-100/40 hover:border-primary-200/60 transition-all duration-300 shadow-sm hover:shadow">
+    <div className="space-y-4 sm:space-y-6">
       <div className="flex items-center gap-2">
         <ChartBarIcon className="w-5 h-5 text-primary-600" />
-        <h3 className="text-sm font-medium text-primary-600">{title}</h3>
+        <h3 className="text-xs sm:text-sm font-medium text-primary-600">{title}</h3>
       </div>
-      <div className="space-y-4 pt-2">
+      <div className="space-y-3 sm:space-y-4 pt-2">
         {metrics.map((metric, index) => (
           <MetricCard
             key={index}
@@ -172,27 +172,27 @@ export default function OverviewPage() {
   }, [startDate, endDate]);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 sm:space-y-10">
       {/* Header Section */}
-      <div className="border-b border-primary-900/10 -mx-20 px-20 pb-6">
+      <div className="border-b border-primary-900/10 -mx-4 sm:-mx-6 lg:-mx-20 px-4 sm:px-6 lg:px-20 pb-4 sm:pb-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-primary-900">Overview</h1>
-            <p className="text-sm text-primary-500 mt-1">Track your key metrics and performance</p>
+            <h1 className="text-xl sm:text-2xl font-semibold text-primary-900">Overview</h1>
+            <p className="text-xs sm:text-sm text-primary-500 mt-1">Track your key metrics and performance</p>
           </div>
           <DateRangePicker />
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="space-y-10">
+      <div className="space-y-6 sm:space-y-10">
         {/* Key Metrics Section */}
         <section>
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 mb-4 sm:mb-6">
             <div className="w-1 h-5 bg-primary-900 rounded-full" />
-            <h2 className="text-base font-medium text-primary-900">Key Metrics</h2>
+            <h2 className="text-sm sm:text-base font-medium text-primary-900">Key Metrics</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <StatisticCard
               icon={ShoppingBagIcon}
               label="Total Orders"
@@ -219,11 +219,11 @@ export default function OverviewPage() {
 
         {/* Ad Platform Performance */}
         <section>
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 mb-4 sm:mb-6">
             <div className="w-1 h-5 bg-primary-900 rounded-full" />
-            <h2 className="text-base font-medium text-primary-900">Ad Platform Performance</h2>
+            <h2 className="text-sm sm:text-base font-medium text-primary-900">Ad Platform Performance</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <PlatformCard
               title="Meta Advertising"
               metrics={[
@@ -261,100 +261,185 @@ export default function OverviewPage() {
 
         {/* Trend Chart Section */}
         <section>
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 mb-4 sm:mb-6">
             <div className="w-1 h-5 bg-primary-900 rounded-full" />
-            <h2 className="text-base font-medium text-primary-900">Performance Trends</h2>
+            <h2 className="text-sm sm:text-base font-medium text-primary-900">Performance Trends</h2>
           </div>
-          <div className="bg-white rounded-xl p-6 border border-primary-100/40 shadow-sm">
+          <div className="bg-white rounded-xl p-4 sm:p-6 border border-primary-100/40 shadow-sm">
             {trendData.loading ? (
-              <div className="h-[400px] flex items-center justify-center">
-                <p className="text-primary-500">Loading trend data...</p>
+              <div className="h-[300px] sm:h-[400px] flex items-center justify-center">
+                <p className="text-sm text-primary-500">Loading trend data...</p>
               </div>
             ) : trendData.error ? (
-              <div className="h-[400px] flex items-center justify-center">
-                <p className="text-red-500">Error loading trend data</p>
+              <div className="h-[300px] sm:h-[400px] flex items-center justify-center">
+                <p className="text-sm text-red-500">Error loading trend data</p>
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart
-                  data={trendData.data}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 20,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="date" 
-                    tick={{ fill: '#6B7280' }}
-                    tickFormatter={(value) => new Date(value).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
-                  />
-                  <YAxis 
-                    yAxisId="left"
-                    tick={{ fill: '#6B7280' }}
-                    tickFormatter={(value) => `₹${value.toLocaleString('en-IN')}`}
-                  />
-                  <YAxis 
-                    yAxisId="right" 
-                    orientation="right"
-                    tick={{ fill: '#6B7280' }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'white',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: '0.5rem',
+              <>
+                <ResponsiveContainer width="100%" height={300} className="sm:hidden">
+                  <LineChart
+                    data={trendData.data}
+                    margin={{
+                      top: 10,
+                      right: 10,
+                      left: 0,
+                      bottom: 0,
                     }}
-                    formatter={(value, name) => {
-                      switch (name) {
-                        case 'order_count':
-                          return [value.toLocaleString('en-IN'), 'Orders'];
-                        case 'total_spend':
-                          return [`₹${value.toLocaleString('en-IN')}`, 'Ad Spend'];
-                        case 'net_revenue':
-                          return [`₹${value.toLocaleString('en-IN')}`, 'Revenue'];
-                        default:
-                          return [value, name];
-                      }
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="date" 
+                      tick={{ fill: '#6B7280', fontSize: 10 }}
+                      tickFormatter={(value) => new Date(value).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                    />
+                    <YAxis 
+                      yAxisId="left"
+                      tick={{ fill: '#6B7280', fontSize: 10 }}
+                      tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}K`}
+                      width={45}
+                    />
+                    <YAxis 
+                      yAxisId="right" 
+                      orientation="right"
+                      tick={{ fill: '#6B7280', fontSize: 10 }}
+                      width={30}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'white',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '0.5rem',
+                        fontSize: '12px',
+                      }}
+                      formatter={(value, name) => {
+                        switch (name) {
+                          case 'order_count':
+                            return [value.toLocaleString('en-IN'), 'Orders'];
+                          case 'total_spend':
+                            return [`₹${value.toLocaleString('en-IN')}`, 'Ad Spend'];
+                          case 'net_revenue':
+                            return [`₹${value.toLocaleString('en-IN')}`, 'Revenue'];
+                          default:
+                            return [value, name];
+                        }
+                      }}
+                      labelFormatter={(label) => new Date(label).toLocaleDateString('en-IN', { 
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    />
+                    <Legend />
+                    <Line
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey="total_spend"
+                      name="Ad Spend"
+                      stroke="#EF4444"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                    <Line
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey="net_revenue"
+                      name="Revenue"
+                      stroke="#10B981"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="order_count"
+                      name="Orders"
+                      stroke="#6366F1"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+                <ResponsiveContainer width="100%" height={400} className="hidden sm:block">
+                  <LineChart
+                    data={trendData.data}
+                    margin={{
+                      top: 20,
+                      right: 30,
+                      left: 20,
+                      bottom: 20,
                     }}
-                    labelFormatter={(label) => new Date(label).toLocaleDateString('en-IN', { 
-                      day: '2-digit',
-                      month: 'long',
-                      year: 'numeric'
-                    })}
-                  />
-                  <Legend />
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="total_spend"
-                    name="Ad Spend"
-                    stroke="#EF4444"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="net_revenue"
-                    name="Revenue"
-                    stroke="#10B981"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="order_count"
-                    name="Orders"
-                    stroke="#6366F1"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="date" 
+                      tick={{ fill: '#6B7280' }}
+                      tickFormatter={(value) => new Date(value).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                    />
+                    <YAxis 
+                      yAxisId="left"
+                      tick={{ fill: '#6B7280' }}
+                      tickFormatter={(value) => `₹${value.toLocaleString('en-IN')}`}
+                    />
+                    <YAxis 
+                      yAxisId="right" 
+                      orientation="right"
+                      tick={{ fill: '#6B7280' }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'white',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '0.5rem',
+                      }}
+                      formatter={(value, name) => {
+                        switch (name) {
+                          case 'order_count':
+                            return [value.toLocaleString('en-IN'), 'Orders'];
+                          case 'total_spend':
+                            return [`₹${value.toLocaleString('en-IN')}`, 'Ad Spend'];
+                          case 'net_revenue':
+                            return [`₹${value.toLocaleString('en-IN')}`, 'Revenue'];
+                          default:
+                            return [value, name];
+                        }
+                      }}
+                      labelFormatter={(label) => new Date(label).toLocaleDateString('en-IN', { 
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    />
+                    <Legend />
+                    <Line
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey="total_spend"
+                      name="Ad Spend"
+                      stroke="#EF4444"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                    <Line
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey="net_revenue"
+                      name="Revenue"
+                      stroke="#10B981"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="order_count"
+                      name="Orders"
+                      stroke="#6366F1"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </>
             )}
           </div>
         </section>

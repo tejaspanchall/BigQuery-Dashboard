@@ -23,8 +23,8 @@ const MetricCard = ({ title, value, format = 'number', loading = false }) => {
 
   return (
     <div className="flex items-center justify-between">
-      <span className="text-sm text-primary-500">{title}</span>
-      <span className="text-base font-medium text-primary-900">
+      <span className="text-xs sm:text-sm text-primary-500">{title}</span>
+      <span className="text-sm sm:text-base font-medium text-primary-900">
         {formatValue(value)}
       </span>
     </div>

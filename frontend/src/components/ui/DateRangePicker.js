@@ -24,8 +24,8 @@ const DateRangePicker = () => {
   };
 
   return (
-    <div className="flex items-center gap-2 bg-white rounded-lg border border-primary-200 p-2">
-      <CalendarIcon className="h-5 w-5 text-primary-400" />
+    <div className="flex items-center gap-1 sm:gap-2 bg-white rounded-lg border border-primary-200 p-1.5 sm:p-2">
+      <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary-400" />
       <div className="flex items-center">
         <DatePicker
           selected={startDate}
@@ -34,9 +34,9 @@ const DateRangePicker = () => {
           startDate={startDate}
           endDate={endDate}
           dateFormat="dd MMM yyyy"
-          className="w-32 text-sm text-primary-900 focus:outline-none"
+          className="w-24 sm:w-32 text-xs sm:text-sm text-primary-900 focus:outline-none"
         />
-        <span className="mx-2 text-primary-400">to</span>
+        <span className="mx-1 sm:mx-2 text-xs sm:text-sm text-primary-400">to</span>
         <DatePicker
           selected={endDate}
           onChange={handleEndDateChange}
@@ -45,7 +45,7 @@ const DateRangePicker = () => {
           endDate={endDate}
           minDate={startDate}
           dateFormat="dd MMM yyyy"
-          className="w-32 text-sm text-primary-900 focus:outline-none"
+          className="w-24 sm:w-32 text-xs sm:text-sm text-primary-900 focus:outline-none"
         />
       </div>
     </div>
