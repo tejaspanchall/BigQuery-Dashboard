@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchMetrics, fetchCTR, fetchClicks, fetchImpressions } from '@/lib/utils/api';
+import { fetchMetrics, fetchCTR, fetchClicks, fetchImpressions, fetchConversions } from '@/lib/utils/api';
 import DateRangePicker from '@/components/ui/DateRangePicker';
 import useDateRangeStore from '@/lib/store/dateRange';
 
@@ -53,10 +53,16 @@ const ComparisonTable = ({ data, loading }) => (
           <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.google.impressions?.count, 'number', loading)}</td>
           <td className="p-4 text-sm text-right text-primary-900">-</td>
         </tr>
-        <tr>
+        <tr className="border-b border-primary-900/10">
           <td className="p-4 text-sm text-primary-900">CTR</td>
           <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.meta.ctr?.ratio, 'percentage', loading)}</td>
           <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.google.ctr?.ratio, 'percentage', loading)}</td>
+          <td className="p-4 text-sm text-right text-primary-900">-</td>
+        </tr>
+        <tr>
+          <td className="p-4 text-sm text-primary-900">Conversions</td>
+          <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.meta.conversions?.count, 'number', loading)}</td>
+          <td className="p-4 text-sm text-right text-primary-900">{formatValue(data.google.conversions?.count, 'number', loading)}</td>
           <td className="p-4 text-sm text-right text-primary-900">-</td>
         </tr>
       </tbody>
@@ -72,12 +78,14 @@ export default function PlatformComparisonPage() {
       clicks: null,
       impressions: null,
       ctr: null,
+      conversions: null,
     },
     google: {
       adSpend: null,
       clicks: null,
       impressions: null,
       ctr: null,
+      conversions: null,
     },
     shopify: {
       orders: null,
@@ -93,12 +101,14 @@ export default function PlatformComparisonPage() {
           clicks: null,
           impressions: null,
           ctr: null,
+          conversions: null,
         },
         google: {
           adSpend: null,
           clicks: null,
           impressions: null,
           ctr: null,
+          conversions: null,
         },
         shopify: {
           orders: null,
@@ -112,10 +122,12 @@ export default function PlatformComparisonPage() {
           metaClicks,
           metaImpressions,
           metaCTR,
+          metaConversions,
           googleAdSpend,
           googleClicks,
           googleImpressions,
           googleCTR,
+          googleConversions,
           shopifyOrders,
           shopifyRevenue,
         ] = await Promise.all([
@@ -123,10 +135,12 @@ export default function PlatformComparisonPage() {
           fetchClicks('/api/meta/clicks', startDate, endDate),
           fetchImpressions('/api/meta/impressions', startDate, endDate),
           fetchCTR('/api/meta/ctr', startDate, endDate),
+          fetchConversions('/api/meta/conversions', startDate, endDate),
           fetchMetrics('/api/google/adspend', startDate, endDate),
           fetchClicks('/api/google/clicks', startDate, endDate),
           fetchImpressions('/api/google/impressions', startDate, endDate),
           fetchCTR('/api/google/ctr', startDate, endDate),
+          fetchConversions('/api/google/conversions', startDate, endDate),
           fetchMetrics('/api/shopify/orders', startDate, endDate),
           fetchMetrics('/api/shopify/net-revenue', startDate, endDate),
         ]);
@@ -137,12 +151,14 @@ export default function PlatformComparisonPage() {
             clicks: metaClicks,
             impressions: metaImpressions,
             ctr: metaCTR,
+            conversions: metaConversions,
           },
           google: {
             adSpend: googleAdSpend,
             clicks: googleClicks,
             impressions: googleImpressions,
             ctr: googleCTR,
+            conversions: googleConversions,
           },
           shopify: {
             orders: shopifyOrders,
@@ -157,12 +173,14 @@ export default function PlatformComparisonPage() {
             clicks: { error: true },
             impressions: { error: true },
             ctr: { error: true },
+            conversions: { error: true },
           },
           google: {
             adSpend: { error: true },
             clicks: { error: true },
             impressions: { error: true },
             ctr: { error: true },
+            conversions: { error: true },
           },
           shopify: {
             orders: { error: true },

@@ -236,6 +236,7 @@ class MetaService {
       const [rows] = await table.getRows();
       
       const conversionsByDate = {};
+      let totalConversions = 0;
       
       rows.forEach(row => {
         try {
@@ -251,6 +252,7 @@ class MetaService {
                 conversionsByDate[date] = 0;
               }
               conversionsByDate[date] += conversions;
+              totalConversions += conversions;
             }
           }
         } catch (e) {
@@ -258,10 +260,13 @@ class MetaService {
         }
       });
       
-      return Object.entries(conversionsByDate).map(([date, conversions]) => ({
-        date,
-        conversions
-      })).sort((a, b) => a.date.localeCompare(b.date));
+      return {
+        count: totalConversions,
+        daily_data: Object.entries(conversionsByDate).map(([date, conversions]) => ({
+          date,
+          conversions
+        })).sort((a, b) => a.date.localeCompare(b.date))
+      };
       
     } catch (error) {
       console.error('Error fetching Meta conversions:', error);

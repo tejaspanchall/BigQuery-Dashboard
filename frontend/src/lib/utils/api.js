@@ -140,4 +140,25 @@ export const fetchCTR = async (endpoint, startDate, endDate) => {
   }
 };
 
+export const fetchConversions = async (endpoint, startDate, endDate) => {
+  try {
+    const response = await api.post(endpoint, {
+      startDate: formatDateForAPI(startDate),
+      endDate: formatDateForAPI(endDate),
+    });
+
+    const { data } = response.data || {};
+    return {
+      count: Number(data?.count) || 0,
+      daily_data: Array.isArray(data?.daily_data) ? data.daily_data.map(item => ({
+        date: item.date,
+        conversions: Number(item.conversions) || 0
+      })) : []
+    };
+  } catch (error) {
+    console.error(`Error fetching conversions from ${endpoint}:`, error);
+    throw error;
+  }
+};
+
 export default api; 
