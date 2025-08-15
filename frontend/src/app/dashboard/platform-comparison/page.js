@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { fetchMetrics, fetchCTR, fetchClicks, fetchImpressions, fetchConversions } from '@/lib/utils/api';
 import DateRangePicker from '@/components/ui/DateRangePicker';
 import useDateRangeStore from '@/lib/store/dateRange';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const formatValue = (val, format = 'number', loading = false) => {
   if (loading) return 'Loading...';
@@ -69,6 +70,292 @@ const ComparisonTable = ({ data, loading }) => (
     </table>
   </div>
 );
+
+const MetaVsGoogleChart = ({ data, loading }) => {
+  const [selectedMetric, setSelectedMetric] = useState('Ad Spend');
+  const metrics = ['Ad Spend', 'Clicks', 'Impressions', 'Conversions']; // Removed CTR
+
+  if (loading) {
+    return (
+      <div className="h-[400px] flex items-center justify-center bg-white rounded-xl p-4 sm:p-6 border border-primary-900/10">
+        <p className="text-sm text-primary-600">Loading chart data...</p>
+      </div>
+    );
+  }
+
+  const formatValue = (value, metric) => {
+    if (metric === 'Ad Spend') {
+      return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0,
+      }).format(value);
+    }
+    if (metric === 'CTR') {
+      return `${value.toFixed(2)}%`;
+    }
+    return new Intl.NumberFormat('en-IN').format(value);
+  };
+
+  const getMetricData = () => {
+    let metaData = [];
+    let googleData = [];
+
+    switch (selectedMetric) {
+      case 'Ad Spend': {
+        // Aggregate daily spend for Meta
+        const metaDailySpend = {};
+        (data.meta.adSpend?.daily_data || []).forEach(item => {
+          if (!metaDailySpend[item.date]) {
+            metaDailySpend[item.date] = 0;
+          }
+          metaDailySpend[item.date] += Number(item.spend) || 0;
+        });
+        metaData = Object.entries(metaDailySpend).map(([date, spend]) => ({ date, spend }));
+
+        // Aggregate daily spend for Google
+        const googleDailySpend = {};
+        (data.google.adSpend?.daily_data || []).forEach(item => {
+          if (!googleDailySpend[item.date]) {
+            googleDailySpend[item.date] = 0;
+          }
+          googleDailySpend[item.date] += Number(item.spend) || 0;
+        });
+        googleData = Object.entries(googleDailySpend).map(([date, spend]) => ({ date, spend }));
+        break;
+      }
+      case 'Clicks':
+        metaData = data.meta.clicks?.daily_data || [];
+        googleData = data.google.clicks?.daily_data || [];
+        break;
+      case 'Impressions':
+        metaData = data.meta.impressions?.daily_data || [];
+        googleData = data.google.impressions?.daily_data || [];
+        break;
+      case 'CTR':
+        metaData = data.meta.ctr?.daily_data || [];
+        googleData = data.google.ctr?.daily_data || [];
+        break;
+      case 'Conversions':
+        metaData = data.meta.conversions?.daily_data || [];
+        googleData = data.google.conversions?.daily_data || [];
+        break;
+    }
+
+    // Get all unique dates
+    const allDates = new Set([
+      ...metaData.map(d => d.date),
+      ...googleData.map(d => d.date),
+    ]);
+
+    // Create chart data
+    return Array.from(allDates).sort().map(date => {
+      const metaItem = metaData.find(d => d.date === date);
+      const googleItem = googleData.find(d => d.date === date);
+
+      const getValue = (item) => {
+        if (!item) return 0;
+        switch (selectedMetric) {
+          case 'Ad Spend': return item.spend || 0;
+          case 'Clicks': return item.clicks || 0;
+          case 'Impressions': return item.impressions || 0;
+          case 'CTR': return item.ctr || 0;
+          case 'Conversions': return item.conversions || 0;
+          default: return 0;
+        }
+      };
+
+      return {
+        date,
+        Meta: getValue(metaItem),
+        Google: getValue(googleItem),
+      };
+    });
+  };
+
+  return (
+    <div className="bg-white rounded-xl p-4 sm:p-6 border border-primary-900/10">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-primary-900">Meta vs Google Comparison</h3>
+          <div className="flex gap-2">
+            {metrics.map((metric) => (
+              <button
+                key={metric}
+                onClick={() => setSelectedMetric(metric)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                  selectedMetric === metric
+                    ? 'bg-primary-900 text-white'
+                    : 'bg-gray-100 text-primary-600 hover:bg-gray-200'
+                }`}
+              >
+                {metric}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={getMetricData()}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="date" 
+                tick={{ fill: '#6B7280' }}
+                tickFormatter={(value) => new Date(value).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+              />
+              <YAxis 
+                tick={{ fill: '#6B7280' }}
+                tickFormatter={(value) => formatValue(value, selectedMetric)}
+              />
+              <Tooltip 
+                formatter={(value, name) => [formatValue(value, selectedMetric), name]}
+                labelFormatter={(label) => new Date(label).toLocaleDateString('en-IN', { 
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric'
+                })}
+              />
+              <Legend />
+              <Line 
+                type="monotone" 
+                dataKey="Meta" 
+                stroke="#1877F2" 
+                strokeWidth={2} 
+                dot={false} 
+              />
+              <Line 
+                type="monotone" 
+                dataKey="Google" 
+                stroke="#34A853" 
+                strokeWidth={2} 
+                dot={false} 
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PlatformCharts = ({ data, loading }) => {
+  if (loading) {
+    return (
+      <div className="h-[400px] flex items-center justify-center bg-white rounded-xl p-4 sm:p-6 border border-primary-900/10">
+        <p className="text-sm text-primary-600">Loading chart data...</p>
+      </div>
+    );
+  }
+
+  const formatCurrency = (value) => new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  }).format(value);
+
+  const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value);
+  const formatPercentage = (value) => `${value.toFixed(2)}%`;
+
+  // Prepare data for different comparisons
+  const shopifyVsMetaData = [
+    {
+      name: 'Conversions vs Orders',
+      'Meta Conversions': data.meta.conversions?.count || 0,
+      'Shopify Orders': data.shopify.orders?.count || 0,
+    }
+  ];
+
+  const shopifyVsGoogleData = [
+    {
+      name: 'Conversions vs Orders',
+      'Google Conversions': data.google.conversions?.count || 0,
+      'Shopify Orders': data.shopify.orders?.count || 0,
+    }
+  ];
+
+  const metaVsGoogleData = [
+    {
+      name: 'Ad Spend',
+      'Meta': data.meta.adSpend?.amount || 0,
+      'Google': data.google.adSpend?.amount || 0,
+    },
+    {
+      name: 'Clicks',
+      'Meta': data.meta.clicks?.count || 0,
+      'Google': data.google.clicks?.count || 0,
+    },
+    {
+      name: 'Impressions',
+      'Meta': data.meta.impressions?.count || 0,
+      'Google': data.google.impressions?.count || 0,
+    },
+    {
+      name: 'Conversions',
+      'Meta': data.meta.conversions?.count || 0,
+      'Google': data.google.conversions?.count || 0,
+    },
+  ];
+
+  const renderChart = (chartData, title, isMetaVsGoogle = false) => (
+    <div className="bg-white rounded-xl p-4 sm:p-6 border border-primary-900/10">
+      <h3 className="text-sm font-medium text-primary-900 mb-6">{title}</h3>
+      <div className="h-[400px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 20,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip 
+              formatter={(value, name, props) => {
+                const metric = props.payload.name;
+                if (metric === 'CTR' || (isMetaVsGoogle && chartData[0].name === 'CTR')) {
+                  return [formatPercentage(value), name];
+                }
+                if (metric === 'Ad Spend' || name.includes('Revenue') || name.includes('Spend')) {
+                  return [formatCurrency(value), name];
+                }
+                return [formatNumber(value), name];
+              }}
+            />
+            <Legend />
+            {Object.keys(chartData[0]).filter(key => key !== 'name').map((key, index) => (
+              <Bar 
+                key={key} 
+                dataKey={key} 
+                fill={
+                  key.includes('Meta') || key === 'Meta' ? '#1877F2' : 
+                  key.includes('Google') || key === 'Google' ? '#34A853' : 
+                  '#95BF47'
+                }
+              />
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Meta vs Google Comparison */}
+      <MetaVsGoogleChart data={data} loading={loading} />
+      
+      {/* Shopify Comparisons */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {renderChart(shopifyVsMetaData, 'Shopify Orders vs Meta Conversions')}
+        {renderChart(shopifyVsGoogleData, 'Shopify Orders vs Google Conversions')}
+      </div>
+    </div>
+  );
+};
 
 export default function PlatformComparisonPage() {
   const { startDate, endDate } = useDateRangeStore();
@@ -211,6 +498,7 @@ export default function PlatformComparisonPage() {
       {/* Main Content */}
       <div className="space-y-6">
         <ComparisonTable data={metrics} loading={isLoading} />
+        <PlatformCharts data={metrics} loading={isLoading} />
       </div>
     </div>
   );
