@@ -54,10 +54,16 @@ const ComparisonTable = ({ data, loading }) => (
           <td className="p-3 sm:p-4 text-xs sm:text-sm text-right text-primary-900">{formatValue(data.google.impressions?.count, 'number', loading)}</td>
           <td className="p-3 sm:p-4 text-xs sm:text-sm text-right text-primary-900">-</td>
         </tr>
-        <tr>
+        <tr className="border-b border-primary-900/10">
           <td className="p-3 sm:p-4 text-xs sm:text-sm text-primary-900">CTR</td>
           <td className="p-3 sm:p-4 text-xs sm:text-sm text-right text-primary-900">{formatValue(data.meta.ctr?.ratio, 'percentage', loading)}</td>
           <td className="p-3 sm:p-4 text-xs sm:text-sm text-right text-primary-900">{formatValue(data.google.ctr?.ratio, 'percentage', loading)}</td>
+          <td className="p-3 sm:p-4 text-xs sm:text-sm text-right text-primary-900">-</td>
+        </tr>
+        <tr>
+          <td className="p-3 sm:p-4 text-xs sm:text-sm text-primary-900">Conversions</td>
+          <td className="p-3 sm:p-4 text-xs sm:text-sm text-right text-primary-900">{formatValue(data.meta.conversions?.count, 'number', loading)}</td>
+          <td className="p-3 sm:p-4 text-xs sm:text-sm text-right text-primary-900">{formatValue(data.google.conversions?.count, 'number', loading)}</td>
           <td className="p-3 sm:p-4 text-xs sm:text-sm text-right text-primary-900">-</td>
         </tr>
       </tbody>
