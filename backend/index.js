@@ -25,6 +25,7 @@ const metaRoutes = require('./routes/meta');
 const googleRoutes = require('./routes/google');
 const shopifyRoutes = require('./routes/shopify');
 const trendRoutes = require('./routes/trends');
+const drilldownRoutes = require('./routes/drilldown');
 
 // Welcome route
 app.get('/', (req, res) => {
@@ -38,6 +39,7 @@ app.use('/api/meta', metaRoutes);
 app.use('/api/google', googleRoutes);
 app.use('/api/shopify', shopifyRoutes);
 app.use('/api/trends', trendRoutes);
+app.use('/api/drilldown', drilldownRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

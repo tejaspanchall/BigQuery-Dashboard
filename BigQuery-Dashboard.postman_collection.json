@@ -919,6 +919,68 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Drilldown",
+			"item": [
+				{
+					"name": "Get Drilldown Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/drilldown",
+							"host": ["{{base_url}}"],
+							"path": ["api", "drilldown"]
+						},
+						"description": "Get detailed drilldown data from Google and Meta platforms"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
+								},
+								"url": "{{base_url}}/api/drilldown"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"google\": {\n            \"customer_id\": \"5360832260\",\n            \"customer_descriptive_name\": \"Akiiko\",\n            \"cost\": 857.84,\n            \"impressions\": 687,\n            \"clicks\": 13,\n            \"ctr\": 0.115937853,\n            \"average_cpc\": 12.77,\n            \"average_cpm\": 1248.57,\n            \"conversions\": 4\n        },\n        \"meta\": {\n            \"account_id\": \"1234567890\",\n            \"account_name\": \"Meta Ads Account\",\n            \"spend\": 532.95,\n            \"impressions\": 12450,\n            \"clicks\": 325,\n            \"ctr\": 2.61,\n            \"cpc\": 1.64,\n            \"cpm\": 42.81,\n            \"conversions\": 18\n        }\n    }\n}"
+						}
+					]
+				}
+			]
 		}
 	]
 } 

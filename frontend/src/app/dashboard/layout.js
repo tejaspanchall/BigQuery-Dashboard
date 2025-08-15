@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   ChartBarIcon,
   ArrowsRightLeftIcon,
@@ -39,8 +39,14 @@ const navigation = [
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
+  const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
 
   return (
     <div className="min-h-screen bg-primary-50">
@@ -50,9 +56,11 @@ export default function DashboardLayout({ children }) {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <h1 className="text-lg sm:text-xl font-semibold text-primary-900">
-                BigQuery Dashboard
-              </h1>
+              <Link href="/dashboard/overview" className="hover:opacity-80 transition-opacity">
+                <h1 className="text-lg sm:text-xl font-semibold text-primary-900">
+                  BigQuery Dashboard
+                </h1>
+              </Link>
             </div>
 
             {/* Center Navigation - Desktop */}
@@ -102,7 +110,7 @@ export default function DashboardLayout({ children }) {
             {/* Logout Button - Desktop */}
             <div className="hidden lg:flex lg:items-center">
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-700 hover:text-primary-900 transition-colors duration-200"
               >
                 <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
@@ -138,7 +146,7 @@ export default function DashboardLayout({ children }) {
             <button
               onClick={() => {
                 setIsMobileMenuOpen(false);
-                logout();
+                handleLogout();
               }}
               className="w-full mt-2 flex items-center rounded-lg py-2 px-3 text-base font-medium text-primary-500 hover:bg-primary-50 hover:text-primary-900"
             >

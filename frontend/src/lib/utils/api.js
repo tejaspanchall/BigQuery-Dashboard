@@ -23,6 +23,57 @@ export const login = async (password) => {
   return response.data;
 };
 
+export const fetchDrilldown = async (startDate, endDate) => {
+  try {
+    const response = await api.post('/api/drilldown', {
+      startDate: formatDateForAPI(startDate),
+      endDate: formatDateForAPI(endDate),
+    });
+
+    // Validate response structure
+    if (!response.data || typeof response.data !== 'object') {
+      throw new Error('Invalid response format');
+    }
+
+    const { success, data, message } = response.data;
+
+    if (!success) {
+      throw new Error(message || 'Failed to fetch drilldown data');
+    }
+
+    // Validate data structure
+    if (!data || !data.google || !data.meta) {
+      throw new Error('Invalid data structure in response');
+    }
+
+    // Process numeric values to ensure they're numbers
+    const processMetrics = (platform) => {
+      const metrics = { ...platform };
+      const numericFields = ['cost', 'spend', 'impressions', 'clicks', 'ctr', 'average_cpc', 'average_cpm', 'cpc', 'cpm', 'conversions'];
+      
+      numericFields.forEach(field => {
+        if (field in metrics) {
+          metrics[field] = Number(metrics[field]);
+        }
+      });
+      
+      return metrics;
+    };
+
+    return {
+      success: true,
+      data: {
+        google: processMetrics(data.google),
+        meta: processMetrics(data.meta)
+      }
+    };
+
+  } catch (error) {
+    console.error('Error fetching drilldown data:', error);
+    throw error;
+  }
+};
+
 export const fetchTrends = async (startDate, endDate) => {
   try {
     const response = await api.post('/api/trends/daily', {
