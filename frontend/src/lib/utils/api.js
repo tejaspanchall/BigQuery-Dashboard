@@ -3,7 +3,7 @@ import useAuthStore from '../store/auth';
 import { format } from 'date-fns';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
 api.interceptors.request.use((config) => {
