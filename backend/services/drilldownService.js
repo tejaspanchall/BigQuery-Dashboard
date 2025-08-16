@@ -135,20 +135,12 @@ class DrilldownService {
       const table = dataset.table('ads_insights');
       const [rows] = await table.getRows();
 
-      const accountIdSet = new Set();
-      const accountNameSet = new Set();
-      
-      const aggregatedData = {
-        dates: new Set(),
-        spend: 0,
-        impressions: 0,
-        clicks: 0,
-        conversions: 0
-      };
+      // Create a map to store data for each account
+      const accountData = new Map();
       
       rows.forEach(row => {
         try {
-          if (!row.date_start) return;
+          if (!row.date_start || !row.account_id) return;
           
           const dateStr = row.date_start.value || row.date_start;
           const date = dateStr.substring(0, 10); // Get YYYY-MM-DD part
@@ -159,55 +151,68 @@ class DrilldownService {
             const clicks = parseInt(row.clicks || 0);
             const conversions = parseInt(row.conversions || 0);
             
-            // Store unique account IDs and names
-            if (row.account_id) accountIdSet.add(row.account_id);
-            if (row.account_name) accountNameSet.add(row.account_name);
+            // Initialize account data if it doesn't exist
+            if (!accountData.has(row.account_id)) {
+              accountData.set(row.account_id, {
+                account_id: row.account_id,
+                account_name: row.account_name || '',
+                dates: new Set(),
+                spend: 0,
+                impressions: 0,
+                clicks: 0,
+                conversions: 0
+              });
+            }
+
+            const accountMetrics = accountData.get(row.account_id);
             
             // Track unique dates
-            aggregatedData.dates.add(date);
+            accountMetrics.dates.add(date);
             
-            // Accumulate values
-            aggregatedData.spend += spend;
-            aggregatedData.impressions += impressions;
-            aggregatedData.clicks += clicks;
-            aggregatedData.conversions += conversions;
+            // Accumulate values for this account
+            accountMetrics.spend += spend;
+            accountMetrics.impressions += impressions;
+            accountMetrics.clicks += clicks;
+            accountMetrics.conversions += conversions;
           }
         } catch (e) {
           console.error('Error processing Meta row:', e);
         }
       });
+
+      // Process each account's data and create final results
+      const accountResults = [];
       
-      // Convert account IDs and names to comma-separated strings
-      aggregatedData.account_id = Array.from(accountIdSet).join(', ');
-      aggregatedData.account_name = Array.from(accountNameSet).join(', ');
-      
-      // Calculate CTR using total clicks and impressions
-      const ctr = aggregatedData.impressions > 0 
-        ? (aggregatedData.clicks / aggregatedData.impressions) * 100 
-        : 0;
-      
-      // Calculate CPC using total spend and clicks
-      const cpc = aggregatedData.clicks > 0
-        ? aggregatedData.spend / aggregatedData.clicks
-        : 0;
+      for (const [accountId, data] of accountData) {
+        // Calculate metrics for this account
+        const ctr = data.impressions > 0 
+          ? (data.clicks / data.impressions) * 100 
+          : 0;
         
-      // Calculate CPM using total spend and impressions
-      const cpm = aggregatedData.impressions > 0
-        ? (aggregatedData.spend / aggregatedData.impressions) * 1000
-        : 0;
-      
-      // Create final result object
-      return {
-        account_id: aggregatedData.account_id,
-        account_name: aggregatedData.account_name,
-        spend: parseFloat(aggregatedData.spend.toFixed(2)),
-        impressions: aggregatedData.impressions,
-        clicks: aggregatedData.clicks,
-        ctr: parseFloat(ctr.toFixed(2)),
-        cpc: parseFloat(cpc.toFixed(2)),
-        cpm: parseFloat(cpm.toFixed(2)),
-        conversions: aggregatedData.conversions
-      };
+        const cpc = data.clicks > 0
+          ? data.spend / data.clicks
+          : 0;
+          
+        const cpm = data.impressions > 0
+          ? (data.spend / data.impressions) * 1000
+          : 0;
+
+        accountResults.push({
+          account_id: data.account_id,
+          account_name: data.account_name,
+          spend: parseFloat(data.spend.toFixed(2)),
+          impressions: data.impressions,
+          clicks: data.clicks,
+          ctr: parseFloat(ctr.toFixed(2)),
+          cpc: parseFloat(cpc.toFixed(2)),
+          cpm: parseFloat(cpm.toFixed(2)),
+          conversions: data.conversions
+        });
+      }
+
+      // If there are multiple accounts, return them as an array
+      // If there's only one account, return it as an object to maintain backward compatibility
+      return accountResults.length > 1 ? accountResults : accountResults[0];
       
     } catch (error) {
       console.error('Error fetching Meta drilldown data:', error);

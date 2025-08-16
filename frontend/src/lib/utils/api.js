@@ -69,11 +69,19 @@ export const fetchDrilldown = async (startDate, endDate) => {
       return metrics;
     };
 
+    // Process Google data
+    const processedGoogleData = processMetrics(data.google);
+
+    // Process Meta data - handle both array and single object cases
+    const processedMetaData = Array.isArray(data.meta) 
+      ? data.meta.map(account => processMetrics(account))
+      : processMetrics(data.meta);
+
     return {
       success: true,
       data: {
-        google: processMetrics(data.google),
-        meta: processMetrics(data.meta)
+        google: processedGoogleData,
+        meta: processedMetaData
       }
     };
 
