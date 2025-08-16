@@ -23,6 +23,69 @@ export const login = async (password) => {
   return response.data;
 };
 
+export const fetchDailyShopify = async (startDate, endDate) => {
+  try {
+    const response = await api.post('/api/dailyShopify', {
+      startDate: formatDateForAPI(startDate),
+      endDate: formatDateForAPI(endDate),
+    });
+
+    if (!response.data?.success) {
+      throw new Error('Failed to fetch orders data');
+    }
+
+    // Process numeric values
+    const processedData = (response.data.data || []).map(order => ({
+      ...order,
+      total_price: Number(order.total_price) || 0,
+      subtotal_price: Number(order.subtotal_price) || 0,
+      total_discounts: Number(order.total_discounts) || 0,
+      total_tax: Number(order.total_tax) || 0,
+      refund_amount: Number(order.refund_amount) || 0
+    }));
+
+    return {
+      success: true,
+      data: processedData
+    };
+  } catch (error) {
+    console.error('Error fetching daily Shopify data:', error);
+    throw error;
+  }
+};
+
+export const fetchShopifyOrders = async (startDate, endDate) => {
+  try {
+    const response = await api.post('/api/shopify/orders', {
+      startDate: formatDateForAPI(startDate),
+      endDate: formatDateForAPI(endDate),
+    });
+
+    return {
+      total_orders: Number(response.data?.total_orders) || 0
+    };
+  } catch (error) {
+    console.error('Error fetching Shopify orders:', error);
+    throw error;
+  }
+};
+
+export const fetchShopifyReturns = async (startDate, endDate) => {
+  try {
+    const response = await api.post('/api/shopify/returns', {
+      startDate: formatDateForAPI(startDate),
+      endDate: formatDateForAPI(endDate),
+    });
+
+    return {
+      return_orders: Number(response.data?.return_orders) || 0
+    };
+  } catch (error) {
+    console.error('Error fetching Shopify returns:', error);
+    throw error;
+  }
+};
+
 export const fetchDrilldown = async (startDate, endDate) => {
   try {
     const response = await api.post('/api/drilldown', {
@@ -225,6 +288,31 @@ export const fetchConversions = async (endpoint, startDate, endDate) => {
     };
   } catch (error) {
     console.error(`Error fetching conversions from ${endpoint}:`, error);
+    throw error;
+  }
+};
+
+export const exportShopifyOrders = async (startDate, endDate, filters) => {
+  try {
+    const response = await api.post('/api/shopify/export', {
+      startDate: formatDateForAPI(startDate),
+      endDate: formatDateForAPI(endDate),
+      filters
+    }, {
+      responseType: 'blob' // Important for file download
+    });
+
+    // Create download link
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Orders_${formatDateForAPI(startDate)}_${formatDateForAPI(endDate)}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error exporting orders:', error);
     throw error;
   }
 };
