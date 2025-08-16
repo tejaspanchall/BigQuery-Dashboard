@@ -117,6 +117,9 @@ router.post('/export', async (req, res) => {
         if (filters.payment_gateway && filters.payment_gateway !== 'all') {
           matches = matches && order.payment_gateway === filters.payment_gateway;
         }
+        if (filters.customer_email && filters.customer_email.trim() !== '') {
+          matches = matches && order.customer_email.toLowerCase().includes(filters.customer_email.toLowerCase().trim());
+        }
         return matches;
       });
     }
