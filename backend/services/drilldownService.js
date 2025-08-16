@@ -41,25 +41,20 @@ class DrilldownService {
       const dataset = bigquery.dataset(this.datasetId);
       const table = dataset.table('account_performance_report');
       const [rows] = await table.getRows();
+
+      const customerIdSet = new Set();
+      const descriptiveNameSet = new Set();
       
-      // Initialize aggregated data object
       const aggregatedData = {
-        customer_id: '',
-        customer_descriptive_name: '',
+        dates: new Set(),
         cost: 0,
         impressions: 0,
         clicks: 0,
-        ctr_total: 0,
-        days_count: 0,
-        cpc_total: 0,
-        cpm_total: 0,
         conversions: 0,
-        dates: new Set()
+        cpc_total: 0,
+        cpm_total: 0
       };
-      
-      let customerIdSet = new Set();
-      let descriptiveNameSet = new Set();
-      const ctrByDate = {};
+
       const cpcByDate = {};
       const cpmByDate = {};
       
@@ -75,7 +70,6 @@ class DrilldownService {
             const cost = row.metrics_cost_micros ? parseFloat(row.metrics_cost_micros) / 1000000 : 0;
             const impressions = parseInt(row.metrics_impressions || 0);
             const clicks = parseInt(row.metrics_clicks || 0);
-            const ctr = parseFloat(row.metrics_ctr || 0);
             // Convert CPC from micros to standard currency
             const average_cpc = row.metrics_average_cpc ? parseFloat(row.metrics_average_cpc) / 1000000 : 0;
             // Convert CPM from micros to standard currency
@@ -94,14 +88,6 @@ class DrilldownService {
             aggregatedData.impressions += impressions;
             aggregatedData.clicks += clicks;
             aggregatedData.conversions += conversions;
-            
-            // For CTR calculation - track by date like in googleService.js
-            if (!ctrByDate[date]) {
-              ctrByDate[date] = 0;
-              aggregatedData.days_count++; // Count unique days
-            }
-            ctrByDate[date] += ctr;
-            aggregatedData.ctr_total += ctr;
             
             // For CPC calculation - track by date
             if (!cpcByDate[date]) {
@@ -126,17 +112,17 @@ class DrilldownService {
       aggregatedData.customer_id = Array.from(customerIdSet).join(', ');
       aggregatedData.customer_descriptive_name = Array.from(descriptiveNameSet).join(', ');
       
-      // Calculate average CTR across all days
-      const ctr = aggregatedData.days_count > 0 
-        ? aggregatedData.ctr_total / aggregatedData.days_count 
+      // Calculate CTR using total clicks and impressions
+      const ctr = aggregatedData.impressions > 0 
+        ? (aggregatedData.clicks / aggregatedData.impressions) * 100 
         : 0;
       
       // Calculate average CPC and CPM
-      const average_cpc = aggregatedData.dates.size > 0
+      const cpc = aggregatedData.dates.size > 0
         ? aggregatedData.cpc_total / aggregatedData.dates.size
         : 0;
         
-      const average_cpm = aggregatedData.dates.size > 0
+      const cpm = aggregatedData.dates.size > 0
         ? aggregatedData.cpm_total / aggregatedData.dates.size
         : 0;
       
@@ -147,9 +133,9 @@ class DrilldownService {
         cost: parseFloat(aggregatedData.cost.toFixed(2)),
         impressions: aggregatedData.impressions,
         clicks: aggregatedData.clicks,
-        ctr: parseFloat(ctr.toFixed(9)),
-        average_cpc: parseFloat(average_cpc.toFixed(2)),
-        average_cpm: parseFloat(average_cpm.toFixed(2)),
+        ctr: parseFloat(ctr.toFixed(2)),
+        cpc: parseFloat(cpc.toFixed(2)),
+        cpm: parseFloat(cpm.toFixed(2)),
         conversions: aggregatedData.conversions
       };
       
@@ -170,25 +156,20 @@ class DrilldownService {
       const dataset = bigquery.dataset(this.datasetId);
       const table = dataset.table('ads_insights');
       const [rows] = await table.getRows();
+
+      const accountIdSet = new Set();
+      const accountNameSet = new Set();
       
-      // Initialize aggregated data object
       const aggregatedData = {
-        account_id: '',
-        account_name: '',
+        dates: new Set(),
         spend: 0,
         impressions: 0,
         clicks: 0,
-        ctr_total: 0,
-        days_count: 0,
-        cpc_total: 0,
-        cpm_total: 0,
         conversions: 0,
-        dates: new Set()
+        cpc_total: 0,
+        cpm_total: 0
       };
-      
-      let accountIdSet = new Set();
-      let accountNameSet = new Set();
-      const ctrByDate = {};
+
       const cpcByDate = {};
       const cpmByDate = {};
       
@@ -203,7 +184,6 @@ class DrilldownService {
             const spend = parseFloat(row.spend || 0);
             const impressions = parseInt(row.impressions || 0);
             const clicks = parseInt(row.clicks || 0);
-            const ctr = parseFloat(row.ctr || 0);
             const cpc = parseFloat(row.cpc || 0);
             const cpm = parseFloat(row.cpm || 0);
             const conversions = parseInt(row.conversions || 0);
@@ -220,14 +200,6 @@ class DrilldownService {
             aggregatedData.impressions += impressions;
             aggregatedData.clicks += clicks;
             aggregatedData.conversions += conversions;
-            
-            // For CTR calculation - track by date like in metaService.js
-            if (!ctrByDate[date]) {
-              ctrByDate[date] = 0;
-              aggregatedData.days_count++; // Count unique days
-            }
-            ctrByDate[date] += ctr;
-            aggregatedData.ctr_total += ctr;
             
             // For CPC calculation - track by date
             if (!cpcByDate[date]) {
@@ -252,9 +224,9 @@ class DrilldownService {
       aggregatedData.account_id = Array.from(accountIdSet).join(', ');
       aggregatedData.account_name = Array.from(accountNameSet).join(', ');
       
-      // Calculate average CTR across all days
-      const ctr = aggregatedData.days_count > 0 
-        ? aggregatedData.ctr_total / aggregatedData.days_count 
+      // Calculate CTR using total clicks and impressions
+      const ctr = aggregatedData.impressions > 0 
+        ? (aggregatedData.clicks / aggregatedData.impressions) * 100 
         : 0;
       
       // Calculate average CPC and CPM
@@ -273,7 +245,7 @@ class DrilldownService {
         spend: parseFloat(aggregatedData.spend.toFixed(2)),
         impressions: aggregatedData.impressions,
         clicks: aggregatedData.clicks,
-        ctr: parseFloat(ctr.toFixed(9)),
+        ctr: parseFloat(ctr.toFixed(2)),
         cpc: parseFloat(cpc.toFixed(2)),
         cpm: parseFloat(cpm.toFixed(2)),
         conversions: aggregatedData.conversions

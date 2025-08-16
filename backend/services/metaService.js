@@ -176,45 +176,43 @@ class MetaService {
       const table = dataset.table('ads_insights');
       const [rows] = await table.getRows();
       
-      const ctrByDate = {};
-      let totalCTR = 0;
-      let daysCount = 0;
+      const aggregatedData = {
+        impressions: 0,
+        clicks: 0
+      };
       
       rows.forEach(row => {
         try {
-          if (!row.date_start || row.ctr === undefined) return;
+          if (!row.date_start) return;
           
           const dateStr = row.date_start.value || row.date_start;
           const date = dateStr.substring(0, 10);
           
           if (date >= startDate && date <= endDate) {
-            const ctr = parseFloat(row.ctr);
-            if (!isNaN(ctr)) {
-              if (!ctrByDate[date]) {
-                ctrByDate[date] = 0;
-                daysCount++; // Count unique days
-              }
-              ctrByDate[date] += ctr;
-              totalCTR += ctr;
-            }
+            // Parse values, defaulting to 0 if undefined or NaN
+            let clicks = parseInt(row.clicks || 0);
+            let impressions = parseInt(row.impressions || 0);
+            
+            // Handle NaN values
+            clicks = isNaN(clicks) ? 0 : clicks;
+            impressions = isNaN(impressions) ? 0 : impressions;
+            
+            // Accumulate values
+            aggregatedData.impressions += impressions;
+            aggregatedData.clicks += clicks;
           }
         } catch (e) {
           console.error('Error processing row:', e);
         }
       });
       
-      // Calculate average CTR across all days
-      const averageCTR = daysCount > 0 ? totalCTR / daysCount : 0;
-      
-      // Convert daily data to array format
-      const dailyData = Object.entries(ctrByDate).map(([date, ctr]) => ({
-        date,
-        ctr: parseFloat(ctr.toFixed(2))
-      })).sort((a, b) => a.date.localeCompare(b.date));
+      // Calculate CTR using total clicks and impressions
+      const ctr = aggregatedData.impressions > 0 
+        ? (aggregatedData.clicks / aggregatedData.impressions) * 100 
+        : 0;
       
       return {
-        ratio: parseFloat(averageCTR.toFixed(2)), // Total CTR for the period
-        daily_data: dailyData // Keep daily breakdown
+        ratio: parseFloat(ctr.toFixed(2))
       };
       
     } catch (error) {
