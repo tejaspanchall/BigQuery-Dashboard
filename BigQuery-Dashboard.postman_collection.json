@@ -109,8 +109,34 @@
 							"raw": "{{base_url}}/api/bigquery/health",
 							"host": ["{{base_url}}"],
 							"path": ["api", "bigquery", "health"]
+						},
+						"description": "Check BigQuery connection status"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"url": "{{base_url}}/api/bigquery/health"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"connected\": true,\n    \"timestamp\": \"2024-03-20T10:00:00.000Z\"\n}"
 						}
-					}
+					]
 				},
 				{
 					"name": "Get Table Names",
@@ -127,8 +153,34 @@
 							"raw": "{{base_url}}/api/bigquery/tables/names",
 							"host": ["{{base_url}}"],
 							"path": ["api", "bigquery", "tables", "names"]
+						},
+						"description": "Get list of table names in the dataset"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"url": "{{base_url}}/api/bigquery/tables/names"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"dataset\": \"your_dataset_id\",\n    \"tables\": [\"table1\", \"table2\"],\n    \"count\": 2\n}"
 						}
-					}
+					]
 				},
 				{
 					"name": "List All Tables",
@@ -145,7 +197,8 @@
 							"raw": "{{base_url}}/api/bigquery/tables",
 							"host": ["{{base_url}}"],
 							"path": ["api", "bigquery", "tables"]
-						}
+						},
+						"description": "Get detailed information about all tables"
 					}
 				},
 				{
@@ -170,7 +223,8 @@
 									"description": "ID of the table"
 								}
 							]
-						}
+						},
+						"description": "Get schema information for a specific table"
 					}
 				}
 			]
@@ -202,37 +256,9 @@
 							"raw": "{{base_url}}/api/meta/adspend",
 							"host": ["{{base_url}}"],
 							"path": ["api", "meta", "adspend"]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
-								},
-								"url": "{{base_url}}/api/meta/adspend"
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"body": "{\n    \"amount\": 5000.10,\n    \"daily_data\": [\n        {\n            \"date\": \"2024-01-01\",\n            \"spend\": 150.25\n        },\n        {\n            \"date\": \"2024-01-02\",\n            \"spend\": 175.50\n        }\n    ],\n    \"platform\": \"meta\"\n}"
-						}
-					]
+						},
+						"description": "Get Meta ad spend data for a date range"
+					}
 				},
 				{
 					"name": "Get Clicks",
@@ -258,37 +284,9 @@
 							"raw": "{{base_url}}/api/meta/clicks",
 							"host": ["{{base_url}}"],
 							"path": ["api", "meta", "clicks"]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
-								},
-								"url": "{{base_url}}/api/meta/clicks"
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"body": "{\n    \"count\": 1500,\n    \"daily_data\": [\n        {\n            \"date\": \"2024-01-01\",\n            \"clicks\": 150\n        },\n        {\n            \"date\": \"2024-01-02\",\n            \"clicks\": 175\n        }\n    ]\n}"
-						}
-					]
+						},
+						"description": "Get Meta clicks data for a date range"
+					}
 				},
 				{
 					"name": "Get Impressions",
@@ -314,37 +312,9 @@
 							"raw": "{{base_url}}/api/meta/impressions",
 							"host": ["{{base_url}}"],
 							"path": ["api", "meta", "impressions"]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
-								},
-								"url": "{{base_url}}/api/meta/impressions"
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"body": "{\n    \"count\": 15000,\n    \"daily_data\": [\n        {\n            \"date\": \"2024-01-01\",\n            \"impressions\": 1500\n        },\n        {\n            \"date\": \"2024-01-02\",\n            \"impressions\": 1750\n        }\n    ]\n}"
-						}
-					]
+						},
+						"description": "Get Meta impressions data for a date range"
+					}
 				},
 				{
 					"name": "Get CTR",
@@ -370,37 +340,9 @@
 							"raw": "{{base_url}}/api/meta/ctr",
 							"host": ["{{base_url}}"],
 							"path": ["api", "meta", "ctr"]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
-								},
-								"url": "{{base_url}}/api/meta/ctr"
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"body": "{\n    \"ratio\": 2.8,\n    \"daily_data\": [\n        {\n            \"date\": \"2024-01-01\",\n            \"ctr\": 2.5\n        },\n        {\n            \"date\": \"2024-01-02\",\n            \"ctr\": 3.1\n        }\n    ]\n}"
-						}
-					]
+						},
+						"description": "Get Meta CTR data for a date range"
+					}
 				},
 				{
 					"name": "Get Conversions",
@@ -426,7 +368,8 @@
 							"raw": "{{base_url}}/api/meta/conversions",
 							"host": ["{{base_url}}"],
 							"path": ["api", "meta", "conversions"]
-						}
+						},
+						"description": "Get Meta conversions data for a date range"
 					}
 				}
 			]
@@ -458,37 +401,9 @@
 							"raw": "{{base_url}}/api/google/adspend",
 							"host": ["{{base_url}}"],
 							"path": ["api", "google", "adspend"]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
-								},
-								"url": "{{base_url}}/api/google/adspend"
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"body": "{\n    \"amount\": 6000.20,\n    \"daily_data\": [\n        {\n            \"date\": \"2024-01-01\",\n            \"spend\": 200.10\n        },\n        {\n            \"date\": \"2024-01-02\",\n            \"spend\": 180.30\n        }\n    ],\n    \"platform\": \"google\"\n}"
-						}
-					]
+						},
+						"description": "Get Google Ads spend data for a date range"
+					}
 				},
 				{
 					"name": "Get Clicks",
@@ -514,37 +429,9 @@
 							"raw": "{{base_url}}/api/google/clicks",
 							"host": ["{{base_url}}"],
 							"path": ["api", "google", "clicks"]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
-								},
-								"url": "{{base_url}}/api/google/clicks"
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"body": "{\n    \"count\": 2000,\n    \"daily_data\": [\n        {\n            \"date\": \"2024-01-01\",\n            \"clicks\": 200\n        },\n        {\n            \"date\": \"2024-01-02\",\n            \"clicks\": 225\n        }\n    ]\n}"
-						}
-					]
+						},
+						"description": "Get Google Ads clicks data for a date range"
+					}
 				},
 				{
 					"name": "Get Impressions",
@@ -570,37 +457,9 @@
 							"raw": "{{base_url}}/api/google/impressions",
 							"host": ["{{base_url}}"],
 							"path": ["api", "google", "impressions"]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
-								},
-								"url": "{{base_url}}/api/google/impressions"
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"body": "{\n    \"count\": 20000,\n    \"daily_data\": [\n        {\n            \"date\": \"2024-01-01\",\n            \"impressions\": 2000\n        },\n        {\n            \"date\": \"2024-01-02\",\n            \"impressions\": 2250\n        }\n    ]\n}"
-						}
-					]
+						},
+						"description": "Get Google Ads impressions data for a date range"
+					}
 				},
 				{
 					"name": "Get CTR",
@@ -626,37 +485,9 @@
 							"raw": "{{base_url}}/api/google/ctr",
 							"host": ["{{base_url}}"],
 							"path": ["api", "google", "ctr"]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
-								},
-								"url": "{{base_url}}/api/google/ctr"
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"body": "{\n    \"ratio\": 2.8,\n    \"daily_data\": [\n        {\n            \"date\": \"2024-01-01\",\n            \"ctr\": 2.7\n        },\n        {\n            \"date\": \"2024-01-02\",\n            \"ctr\": 2.9\n        }\n    ]\n}"
-						}
-					]
+						},
+						"description": "Get Google Ads CTR data for a date range"
+					}
 				},
 				{
 					"name": "Get Conversions",
@@ -682,7 +513,8 @@
 							"raw": "{{base_url}}/api/google/conversions",
 							"host": ["{{base_url}}"],
 							"path": ["api", "google", "conversions"]
-						}
+						},
+						"description": "Get Google Ads conversions data for a date range"
 					}
 				}
 			]
@@ -714,37 +546,9 @@
 							"raw": "{{base_url}}/api/shopify/orders",
 							"host": ["{{base_url}}"],
 							"path": ["api", "shopify", "orders"]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
-								},
-								"url": "{{base_url}}/api/shopify/orders"
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"body": "{\n    \"total_orders\": 150\n}"
-						}
-					]
+						},
+						"description": "Get Shopify orders data for a date range"
+					}
 				},
 				{
 					"name": "Get Net Revenue",
@@ -770,37 +574,9 @@
 							"raw": "{{base_url}}/api/shopify/net-revenue",
 							"host": ["{{base_url}}"],
 							"path": ["api", "shopify", "net-revenue"]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
-								},
-								"url": "{{base_url}}/api/shopify/net-revenue"
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"body": "{\n    \"net_revenue\": 25000.50\n}"
-						}
-					]
+						},
+						"description": "Get Shopify net revenue data for a date range"
+					}
 				},
 				{
 					"name": "Get MER",
@@ -826,37 +602,9 @@
 							"raw": "{{base_url}}/api/shopify/mer",
 							"host": ["{{base_url}}"],
 							"path": ["api", "shopify", "mer"]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
-								},
-								"url": "{{base_url}}/api/shopify/mer"
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"body": "{\n    \"mer\": 2.5,\n    \"net_revenue\": 25000.50,\n    \"total_spend\": 10000.20,\n    \"meta_spend\": 5000.10,\n    \"google_spend\": 5000.10\n}"
-						}
-					]
+						},
+						"description": "Get Marketing Efficiency Ratio (MER) data for a date range"
+					}
 				},
 				{
 					"name": "Get Returns",
@@ -882,7 +630,8 @@
 							"raw": "{{base_url}}/api/shopify/returns",
 							"host": ["{{base_url}}"],
 							"path": ["api", "shopify", "returns"]
-						}
+						},
+						"description": "Get Shopify returns data for a date range"
 					}
 				}
 			]
@@ -949,36 +698,7 @@
 							"path": ["api", "drilldown"]
 						},
 						"description": "Get detailed drilldown data from Google and Meta platforms"
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-01-31\"\n}"
-								},
-								"url": "{{base_url}}/api/drilldown"
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"google\": {\n            \"customer_id\": \"5360832260\",\n            \"customer_descriptive_name\": \"Akiiko\",\n            \"cost\": 857.84,\n            \"impressions\": 687,\n            \"clicks\": 13,\n            \"ctr\": 0.115937853,\n            \"average_cpc\": 12.77,\n            \"average_cpm\": 1248.57,\n            \"conversions\": 4\n        },\n        \"meta\": {\n            \"account_id\": \"1234567890\",\n            \"account_name\": \"Meta Ads Account\",\n            \"spend\": 532.95,\n            \"impressions\": 12450,\n            \"clicks\": 325,\n            \"ctr\": 2.61,\n            \"cpc\": 1.64,\n            \"cpm\": 42.81,\n            \"conversions\": 18\n        }\n    }\n}"
-						}
-					]
+					}
 				}
 			]
 		}
