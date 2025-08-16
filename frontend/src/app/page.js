@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/lib/store/auth';
 import { login } from '@/lib/utils/api';
-import { LockClosedIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const setToken = useAuthStore((state) => state.setToken);
 
@@ -29,21 +30,20 @@ export default function LoginPage() {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-primary-50 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
-        <div className="bg-white shadow-xl rounded-2xl px-6 py-8 sm:px-12 sm:py-16">
-          <div className="mx-auto w-full max-w-md">
-            <div className="flex justify-center">
-              <div className="rounded-full bg-primary-100 p-2 sm:p-3">
-                <LockClosedIcon className="h-6 w-6 sm:h-8 sm:w-8 text-primary-600" />
-              </div>
-            </div>
-            <h1 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-bold tracking-tight text-primary-900">
-              BigQuery Dashboard
-            </h1>
+        <div className="bg-white px-6 py-8 sm:px-8 sm:py-10 rounded-xl shadow-sm border border-primary-900/10">
+          <div>
+            <h2 className="text-center text-xl sm:text-2xl font-bold tracking-tight text-primary-900">
+              Welcome back!
+            </h2>
             <p className="mt-2 text-center text-xs sm:text-sm text-primary-600">
-              Enter your password to access the dashboard
+              Sign in to access your dashboard
             </p>
           </div>
 
@@ -55,17 +55,28 @@ export default function LoginPage() {
               >
                 Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full appearance-none rounded-lg border border-primary-200 px-3 py-2 sm:px-4 sm:py-3 text-sm placeholder-primary-400 shadow-sm transition focus:border-primary-500 focus:outline-none focus:ring-primary-500"
+                  className="block w-full appearance-none rounded-lg border border-primary-200 pl-3 pr-10 py-2 sm:pl-4 sm:pr-12 sm:py-3 text-sm placeholder-primary-400 shadow-sm transition focus:border-primary-500 focus:outline-none focus:ring-primary-500"
                   placeholder="Enter your password"
                 />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 sm:pr-4"
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary-400 hover:text-primary-600" />
+                  ) : (
+                    <EyeIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary-400 hover:text-primary-600" />
+                  )}
+                </button>
               </div>
             </div>
 
