@@ -58,8 +58,9 @@ const EmptyState = () => (
 const DrilldownContent = ({ data, platform, loading }) => {
   // Determine which field names to use based on platform
   const costField = platform === 'google' ? 'cost' : 'spend';
-  const cpcField = platform === 'google' ? 'average_cpc' : 'cpc';
-  const cpmField = platform === 'google' ? 'average_cpm' : 'cpm';
+  // CPC and CPM fields are now the same for both platforms
+  const cpcField = 'cpc';
+  const cpmField = 'cpm';
   const idField = platform === 'google' ? 'customer_id' : 'account_id';
   const nameField = platform === 'google' ? 'customer_descriptive_name' : 'account_name';
 

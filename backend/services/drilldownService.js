@@ -50,13 +50,8 @@ class DrilldownService {
         cost: 0,
         impressions: 0,
         clicks: 0,
-        conversions: 0,
-        cpc_total: 0,
-        cpm_total: 0
+        conversions: 0
       };
-
-      const cpcByDate = {};
-      const cpmByDate = {};
       
       rows.forEach(row => {
         try {
@@ -70,10 +65,6 @@ class DrilldownService {
             const cost = row.metrics_cost_micros ? parseFloat(row.metrics_cost_micros) / 1000000 : 0;
             const impressions = parseInt(row.metrics_impressions || 0);
             const clicks = parseInt(row.metrics_clicks || 0);
-            // Convert CPC from micros to standard currency
-            const average_cpc = row.metrics_average_cpc ? parseFloat(row.metrics_average_cpc) / 1000000 : 0;
-            // Convert CPM from micros to standard currency
-            const average_cpm = row.metrics_average_cpm ? parseFloat(row.metrics_average_cpm) / 1000000 : 0;
             const conversions = parseInt(row.metrics_conversions || 0);
             
             // Store unique customer IDs and names
@@ -88,20 +79,6 @@ class DrilldownService {
             aggregatedData.impressions += impressions;
             aggregatedData.clicks += clicks;
             aggregatedData.conversions += conversions;
-            
-            // For CPC calculation - track by date
-            if (!cpcByDate[date]) {
-              cpcByDate[date] = 0;
-            }
-            cpcByDate[date] += average_cpc;
-            aggregatedData.cpc_total += average_cpc;
-            
-            // For CPM calculation - track by date
-            if (!cpmByDate[date]) {
-              cpmByDate[date] = 0;
-            }
-            cpmByDate[date] += average_cpm;
-            aggregatedData.cpm_total += average_cpm;
           }
         } catch (e) {
           console.error('Error processing Google row:', e);
@@ -117,13 +94,14 @@ class DrilldownService {
         ? (aggregatedData.clicks / aggregatedData.impressions) * 100 
         : 0;
       
-      // Calculate average CPC and CPM
-      const cpc = aggregatedData.dates.size > 0
-        ? aggregatedData.cpc_total / aggregatedData.dates.size
+      // Calculate CPC using total cost and clicks
+      const cpc = aggregatedData.clicks > 0
+        ? aggregatedData.cost / aggregatedData.clicks
         : 0;
         
-      const cpm = aggregatedData.dates.size > 0
-        ? aggregatedData.cpm_total / aggregatedData.dates.size
+      // Calculate CPM using total cost and impressions
+      const cpm = aggregatedData.impressions > 0
+        ? (aggregatedData.cost / aggregatedData.impressions) * 1000
         : 0;
       
       // Create final result object
@@ -165,13 +143,8 @@ class DrilldownService {
         spend: 0,
         impressions: 0,
         clicks: 0,
-        conversions: 0,
-        cpc_total: 0,
-        cpm_total: 0
+        conversions: 0
       };
-
-      const cpcByDate = {};
-      const cpmByDate = {};
       
       rows.forEach(row => {
         try {
@@ -184,8 +157,6 @@ class DrilldownService {
             const spend = parseFloat(row.spend || 0);
             const impressions = parseInt(row.impressions || 0);
             const clicks = parseInt(row.clicks || 0);
-            const cpc = parseFloat(row.cpc || 0);
-            const cpm = parseFloat(row.cpm || 0);
             const conversions = parseInt(row.conversions || 0);
             
             // Store unique account IDs and names
@@ -200,20 +171,6 @@ class DrilldownService {
             aggregatedData.impressions += impressions;
             aggregatedData.clicks += clicks;
             aggregatedData.conversions += conversions;
-            
-            // For CPC calculation - track by date
-            if (!cpcByDate[date]) {
-              cpcByDate[date] = 0;
-            }
-            cpcByDate[date] += cpc;
-            aggregatedData.cpc_total += cpc;
-            
-            // For CPM calculation - track by date
-            if (!cpmByDate[date]) {
-              cpmByDate[date] = 0;
-            }
-            cpmByDate[date] += cpm;
-            aggregatedData.cpm_total += cpm;
           }
         } catch (e) {
           console.error('Error processing Meta row:', e);
@@ -229,13 +186,14 @@ class DrilldownService {
         ? (aggregatedData.clicks / aggregatedData.impressions) * 100 
         : 0;
       
-      // Calculate average CPC and CPM
-      const cpc = aggregatedData.dates.size > 0
-        ? aggregatedData.cpc_total / aggregatedData.dates.size
+      // Calculate CPC using total spend and clicks
+      const cpc = aggregatedData.clicks > 0
+        ? aggregatedData.spend / aggregatedData.clicks
         : 0;
         
-      const cpm = aggregatedData.dates.size > 0
-        ? aggregatedData.cpm_total / aggregatedData.dates.size
+      // Calculate CPM using total spend and impressions
+      const cpm = aggregatedData.impressions > 0
+        ? (aggregatedData.spend / aggregatedData.impressions) * 1000
         : 0;
       
       // Create final result object

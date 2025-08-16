@@ -49,7 +49,16 @@ export const fetchDrilldown = async (startDate, endDate) => {
     // Process numeric values to ensure they're numbers
     const processMetrics = (platform) => {
       const metrics = { ...platform };
-      const numericFields = ['cost', 'spend', 'impressions', 'clicks', 'ctr', 'average_cpc', 'average_cpm', 'cpc', 'cpm', 'conversions'];
+      const numericFields = [
+        'cost', 
+        'spend', 
+        'impressions', 
+        'clicks', 
+        'ctr', 
+        'cpc', 
+        'cpm', 
+        'conversions'
+      ];
       
       numericFields.forEach(field => {
         if (field in metrics) {
